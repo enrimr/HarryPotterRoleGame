@@ -6,7 +6,7 @@ import javax.jms.*;
  * Created by Enri on 25/8/15.
  */
 //Hilo que se comunica con la base de datos
-public class BaseDatos extends Thread { // class BaseDatos extends Runnable,
+public class DataBase extends Thread { // class BaseDatos extends Runnable,
     public void run() {
         try {
             MessageConsumer receiver = session.createConsumer(destination);

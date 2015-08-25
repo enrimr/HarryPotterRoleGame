@@ -25,17 +25,28 @@ public class MapCell {
     // DrawCell: dibuja la celda del mapa. Hay que indicar un Graphics y
     //			la posición x,y donde dibujarla
     //			escala indica entre cuanto dividimos el tamaño de la imagen
-    public void DrawCell(Graphics g, int x, int y){
+    public void drawCell(Graphics g, int x, int y){
         Image img = imagefile.getImage();
         int widthImage = imagefile.getIconWidth();
         int heightImage = imagefile.getIconHeight();
-        g.drawImage(img,x,y,widthImage/escala,heightImage/escala,imagefile.getImageObserver());
+        g.drawImage(img,
+                x,
+                y,
+                widthImage/Integer.valueOf(Configuration.getInstance().getConfig("scale")),
+                heightImage/Integer.valueOf(Configuration.getInstance().getConfig("scale")),
+                imagefile.getImageObserver());
+
         // Si hay objeto, se dibuja también
         if (item){
             Image img2 = itemfile.getImage();
             int widthItem = itemfile.getIconWidth();
             int heightItem = itemfile.getIconHeight();
-            g.drawImage(img2,x,y,widthItem/escala,heightItem/escala,itemfile.getImageObserver());
+            g.drawImage(img2,
+                    x,
+                    y,
+                    widthItem/Integer.valueOf(Configuration.getInstance().getConfig("scale")),
+                    heightItem/Integer.valueOf(Configuration.getInstance().getConfig("scale")),
+                    itemfile.getImageObserver());
         }
     }
 

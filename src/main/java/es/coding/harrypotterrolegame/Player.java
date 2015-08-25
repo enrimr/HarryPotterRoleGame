@@ -47,7 +47,7 @@ public class Player{
     //					1 Pociones
     //					2 Veneno
     //					3 Maldicion
-    private int bando; //0 bueno - 1 malo
+    private int faction; //0 bueno - 1 malo
     boolean fighting=false; //indica si esta combatiendo
     boolean fighting_Criatura=false; //indica si el combate es contra una criatura
     boolean fighting_Profesor=false; //indica si esta hablando con un profesor
@@ -77,7 +77,7 @@ public class Player{
         pos[2]= y;
         imagen = image;
         file = new ImageIcon(imagenes[imagen]);
-        bando=band;
+        faction = band;
         house = casa;
         sex = sexo;
         level = nivel;
@@ -110,5 +110,33 @@ public class Player{
     public void DrawPlayerPos(){
         MapNum.setText("Mapa " + pos[0]);
         MapCoor.setText("("+pos[1]+","+pos[2]+")");
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getFaction() {
+        return faction;
+    }
+
+    public void setFaction(int faction) {
+        this.faction = faction;
+    }
+
+    public int getHouse() {
+        return house;
+    }
+
+    public void setHouse(int house) {
+        this.house = house;
+    }
+
+    public int getSex() {
+        return sex;
+    }
+
+    public void setSex(int sex) {
+        this.sex = sex;
     }
 }

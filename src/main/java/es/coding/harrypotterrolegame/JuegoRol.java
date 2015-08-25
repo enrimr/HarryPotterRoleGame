@@ -1,11 +1,9 @@
 package es.coding.harrypotterrolegame;
 
 import javax.jms.*;
-import javax.naming.Context;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.util.Hashtable;
 import java.util.Random;
 
 //Añadido
@@ -14,7 +12,7 @@ import java.util.Random;
  * Created by Enri on 24/8/15.
  */
 public class JuegoRol extends JFrame{
-    Connections conexionTopic;  //variable que se encarga del paso de mensajes
+    ConnectionProcess conexionTopic;  //variable que se encarga del paso de mensajes
     int x=180,y=20; // Coordenadas del punto inicial de la ventana de gráficos
     int [] mapaTam={450,450}; //tamaño del mapa
     int [] numCeldas={15,15}; //Celdas del mapa
@@ -22,7 +20,7 @@ public class JuegoRol extends JFrame{
     //int [][][] mapa = new int[9][numCeldas[0]][numCeldas[1]];
     Player [] jugadores= new Player[100]; //Vector de otro de jugadores
     int puntero=0; //indica la primera posicion vacia del vector de player
-    Maps [] mundito=new Maps[9]; //variable que guarda los mapas
+    Map[] mundito=new Map[9]; //variable que guarda los mapas
     int nummap=9; //numeros de mapas del juego
     String [] datos = new String[3]; //variable usada para pasar datos a la hora combatir
 
@@ -30,7 +28,7 @@ public class JuegoRol extends JFrame{
     void refresh(){ //procedimiento que refresca el escenario
         if(!miJugador.fighting){ //si el jugador no se encuentra en batalla
             //volvemos a pintar el mapa y al resto de jugadores
-            mundito[miJugador.pos[0]].DrawMap(jContentPane.getGraphics(), 180, 20);
+            mundito[miJugador.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
             DibujarDemasJugadores();
             miJugador.DrawPlayer(jContentPane.getGraphics());
         }
@@ -144,10 +142,10 @@ public class JuegoRol extends JFrame{
     }
 
     //Declaracion e inicializacion de los distintos escenarios
-    Maps map1 = new Maps(mapaTam[0],mapaTam[1],numCeldas[0],numCeldas[1]);  //  @jve:decl-index=0:
-    Maps map2 = new Maps(mapaTam[0],mapaTam[1],numCeldas[0],numCeldas[1]);
-    Maps mapbosque = new Maps(mapaTam[0],mapaTam[1],numCeldas[0],numCeldas[1]);  //  @jve:decl-index=0:
-    Maps mapbosquecamino = new Maps(mapaTam[0],mapaTam[1],numCeldas[0],numCeldas[1]);  //  @jve:decl-index=0:
+    Map map1 = new Map(mapaTam[0],mapaTam[1],numCeldas[0],numCeldas[1]);  //  @jve:decl-index=0:
+    Map map2 = new Map(mapaTam[0],mapaTam[1],numCeldas[0],numCeldas[1]);
+    Map mapbosque = new Map(mapaTam[0],mapaTam[1],numCeldas[0],numCeldas[1]);  //  @jve:decl-index=0:
+    Map mapbosquecamino = new Map(mapaTam[0],mapaTam[1],numCeldas[0],numCeldas[1]);  //  @jve:decl-index=0:
 
     //declaracion de variables player usadas. Mi jugador, las criaturas y los profesores
     Player miJugador;
@@ -155,32 +153,26 @@ public class JuegoRol extends JFrame{
     Player [] profesores= new Player[10];
 
 
-    // Paso de mensajes
-    Hashtable properties;
-    Context context;
-    ConnectionFactory factory;
-    javax.jms.Connection connection;
-    Session session;
-    Destination destination;
+
     int i=0;
 
     //funcion que nos indica si un personaje ya esta insertado en nuestro vector
-    private boolean Esta(String nombre){
+    private boolean esta(String nombre){
         int aux=0;
-        System.out.println("Esta: "+nombre+ "--> Lo que le entra al esta");
-        while(aux<puntero && !jugadores[aux].name.equals(nombre))
+        System.out.println("esta: "+nombre+ "--> Lo que le entra al esta");
+        while(aux<puntero && !jugadores[aux].getName().equals(nombre))
         {
             aux++;
-            System.out.println(aux+jugadores[aux].name);
+            System.out.println(aux+jugadores[aux].getName());
         }
         return aux<puntero;
     }
 
     //procedimiento que busca al rival y carga sus datos
-    void BuscarImagen(String nombre_rival){
+    void buscarImagen(String nombre_rival){
         int aux=0;
         //buscamos al rival
-        while(!jugadores[aux].name.equals(nombre_rival))
+        while(!jugadores[aux].getName().equals(nombre_rival))
         {
             aux++;
         }
@@ -188,11 +180,11 @@ public class JuegoRol extends JFrame{
         jugadores[aux].DrawPlayer(jContentPane.getGraphics(),2,300,50);
         miJugador.DrawPlayer(jContentPane.getGraphics(), 1, 70, 70);
         //cargamos los datos convenientes
-        miJugador.rival=jugadores[aux].name;
+        miJugador.rival=jugadores[aux].getName();
 
         miJugador.rivalID = aux;
         char []r6 =datos[0].toCharArray();
-        jugadores[aux].bando = (int)r6[0]-48;
+        jugadores[aux].setFaction((int)r6[0]-48);
 
         char []r7 =datos[2].toCharArray();
         int a=1;
@@ -235,7 +227,7 @@ public class JuegoRol extends JFrame{
         huir.setVisible(true);
         Maldición_Imperdonable.setVisible(true);
         //llamamos a imprimir imagen para dibujar a los combatientes
-        BuscarImagen(rival);
+        buscarImagen(rival);
 
     }
 
@@ -260,7 +252,7 @@ public class JuegoRol extends JFrame{
         criaturas[rival].DrawPlayer(jContentPane.getGraphics(),2,300,50);
         miJugador.DrawPlayer(jContentPane.getGraphics(), 1, 70, 70);
         //guardamos sus datos e imprimos su vida y su nivel
-        miJugador.rival=criaturas[rival].name;
+        miJugador.rival=criaturas[rival].getName();
         miJugador.rivalID=rival;
 
         vida_rival.setText("Vida: "+criaturas[rival].health);
@@ -297,7 +289,7 @@ public class JuegoRol extends JFrame{
 
         //profesores[rival].DrawPlayer(jContentPane.getGraphics(),2,300,50);
         //miJugador.DrawPlayer(jContentPane.getGraphics(),1,70,70);
-        miJugador.rival=profesores[rival].name;
+        miJugador.rival=profesores[rival].getName();
         miJugador.rivalID=rival;
 
         Random randomGenerator = new Random();
@@ -322,7 +314,7 @@ public class JuegoRol extends JFrame{
         for (int i=0; i<puntero; i++){
             if((jugadores[i].pos[0]== miJugador.pos[0])&&(jugadores[i].pos[1]== miJugador.pos[1])&&(jugadores[i].pos[2]== miJugador.pos[2])){
                 //si nos encontramos con alguien le mandamos el mensaje de combate
-                conexionTopic.SendMessage("combate-"+jugadores[i].name+"*"+ miJugador.name+"$"+ miJugador.bando+ miJugador.level+"%"+ miJugador.health);
+                conexionTopic.sendMessage("combate-"+jugadores[i].getName()+"*"+ miJugador.getName()+"$"+ miJugador.getFaction()+ miJugador.level+"%"+ miJugador.health);
                 //combate(jugadores[i].name);
             }
         }
@@ -335,7 +327,7 @@ public class JuegoRol extends JFrame{
         //comprobamos si nos encontramos con algun profesor y si es de nuestra casa y bando para hablar con el
         for (int i=0; i<10; i++){
             if((profesores[i].pos[0]== miJugador.pos[0])&&(profesores[i].pos[1]== miJugador.pos[1])&&(profesores[i].pos[2]== miJugador.pos[2])){
-                if(((profesores[i].house == miJugador.house)||(profesores[i].house == -1))&&(profesores[i].bando == miJugador.bando)){
+                if(((profesores[i].getHouse() == miJugador.getHouse())||(profesores[i].getHouse() == -1))&&(profesores[i].getFaction() == miJugador.getFaction())){
                     pregunta_profesores(i);
                 }
                 else{
@@ -385,8 +377,8 @@ public class JuegoRol extends JFrame{
                                 indice = textoRecibido.indexOf("-");
                                 String Nombre=textoRecibido.substring(indice+1, textoRecibido.indexOf("*"));
                                 //Comprobamos que el mensaje no lo haya enviado yo
-                                if (!miJugador.name.equals(Nombre)){
-                                    if(!Esta(Nombre)){
+                                if (!miJugador.getName().equals(Nombre)){
+                                    if(!esta(Nombre)){
                                         //si no soy yo y no esta ya agregado obtengo sus datos
                                         String Mapa= textoRecibido.substring(textoRecibido.indexOf("*")+1,textoRecibido.indexOf("*")+3);
                                         String X= textoRecibido.substring(textoRecibido.indexOf("*")+3,textoRecibido.indexOf("*")+5);
@@ -403,7 +395,7 @@ public class JuegoRol extends JFrame{
                                         int imgnum= (int)r3[0]*10+(int)r3[1]-528;
                                         //creamos en la posicion adecuado al nuevo player
                                         jugadores[puntero] = new Player(Nombre, coordMapa, coordX, coordY, imgnum);
-                                        System.out.println("Prueba: "+jugadores[puntero].name);
+                                        System.out.println("Prueba: "+jugadores[puntero].getName());
                                         String charX="0";
                                         String charY="0";
                                         String charMapa="0";
@@ -414,7 +406,7 @@ public class JuegoRol extends JFrame{
                                         if(miJugador.pos[2]>9)charY="";
                                         if(miJugador.imagen>9)charimg="";
                                         //le enviamos un mensaje con mis datos para que me agregue
-                                        conexionTopic.SendMessage("conectar-"+ miJugador.name+"*"+charMapa+ miJugador.pos[0]+charX+ miJugador.pos[1]+charY+ miJugador.pos[2]+charimg+ miJugador.imagen);
+                                        conexionTopic.sendMessage("conectar-"+ miJugador.getName()+"*"+charMapa+ miJugador.pos[0]+charX+ miJugador.pos[1]+charY+ miJugador.pos[2]+charimg+ miJugador.imagen);
                                         //pintamos al nuevo jugador para poder verlo
                                         if (miJugador.pos[0]==jugadores[puntero].pos[0]){
                                             jugadores[puntero].DrawPlayer(jContentPane.getGraphics());
@@ -427,7 +419,7 @@ public class JuegoRol extends JFrame{
                                 indice = textoRecibido.indexOf("pos");
                                 //si se recibe pos indica que un jugador se ha movido
                                 if (indice != -1){
-                                    String xino = miJugador.name;
+                                    String xino = miJugador.getName();
                                     //si no soy yo recojo los datos enviados
                                     if (!xino.equals(textoRecibido.substring(textoRecibido.indexOf("-")+1,textoRecibido.indexOf("*")))){
                                         String Nombre=textoRecibido.substring(textoRecibido.indexOf("-")+1,textoRecibido.indexOf("*"));
@@ -491,7 +483,7 @@ public class JuegoRol extends JFrame{
                 miJugador.pos[2]=(numCeldas[1]-1);//eSTABA EN -1
                 Consola.setText("Estamos en el mapa:" + miJugador.pos[0]);
                 jContentPane.getGraphics().clearRect(180,20,200,200);
-                mundito[miJugador.pos[0]].DrawMap(jContentPane.getGraphics(), x, y);
+                mundito[miJugador.pos[0]].drawMap(jContentPane.getGraphics(), x, y);
                 miJugador.DrawPlayer(jContentPane.getGraphics());
 
                 miJugador.DrawPlayerPos();
@@ -523,7 +515,7 @@ public class JuegoRol extends JFrame{
                 miJugador.pos[2]=1;
                 Consola.setText("Estamos en el mapa:" + miJugador.pos[0]);
                 jContentPane.getGraphics().clearRect(180,20,200,200);
-                mundito[miJugador.pos[0]].DrawMap(jContentPane.getGraphics(), x, y);
+                mundito[miJugador.pos[0]].drawMap(jContentPane.getGraphics(), x, y);
                 miJugador.DrawPlayer(jContentPane.getGraphics());
                 miJugador.DrawPlayerPos();
             }
@@ -553,7 +545,7 @@ public class JuegoRol extends JFrame{
                 miJugador.pos[1]=0;
                 Consola.setText("Estamos en el mapa:" + miJugador.pos[0]);
                 jContentPane.getGraphics().clearRect(180,20,200,200);
-                mundito[miJugador.pos[0]].DrawMap(jContentPane.getGraphics(), x, y);
+                mundito[miJugador.pos[0]].drawMap(jContentPane.getGraphics(), x, y);
                 miJugador.DrawPlayer(jContentPane.getGraphics());
                 miJugador.DrawPlayerPos();
             }
@@ -583,7 +575,7 @@ public class JuegoRol extends JFrame{
                 miJugador.pos[1]=(numCeldas[1]-1);
                 Consola.setText("Estamos en el mapa:" + miJugador.pos[0]);
                 jContentPane.getGraphics().clearRect(180,20,200,200);
-                mundito[miJugador.pos[0]].DrawMap(jContentPane.getGraphics(), x, y);
+                mundito[miJugador.pos[0]].drawMap(jContentPane.getGraphics(), x, y);
                 miJugador.DrawPlayer(jContentPane.getGraphics());
                 miJugador.DrawPlayerPos();
             }
@@ -1028,7 +1020,7 @@ public class JuegoRol extends JFrame{
                     if(miJugador.pos[2]>9)charY="";
                     if(miJugador.imagen>9)charimg="";
                     //mandar mis datos a los demas jugadores porque me conecte
-                    conexionTopic.SendMessage("conectar-"+ miJugador.name+"*"+charMapa+ miJugador.pos[0]+charX+ miJugador.pos[1]+charY+ miJugador.pos[2]+charimg+ miJugador.imagen);
+                    conexionTopic.sendMessage("conectar-"+ miJugador.getName()+"*"+charMapa+ miJugador.pos[0]+charX+ miJugador.pos[1]+charY+ miJugador.pos[2]+charimg+ miJugador.imagen);
                     Vida.setVisible(true);
                     Exp.setVisible(true);
                     Nivel.setVisible(true);
@@ -1125,7 +1117,7 @@ public class JuegoRol extends JFrame{
                         if(miJugador.pos[1]>9)charX="";
                         if(miJugador.pos[2]>9)charY="";
                         //mandamos nuestra nueva posicion
-                        conexionTopic.SendMessage("pos-"+ miJugador.name+"*"+charMapa+ miJugador.pos[0]+charX+ miJugador.pos[1]+charY+ miJugador.pos[2]);
+                        conexionTopic.sendMessage("pos-"+ miJugador.name+"*"+charMapa+ miJugador.pos[0]+charX+ miJugador.pos[1]+charY+ miJugador.pos[2]);
                         DibujarDemasJugadores();
                         //Comprobamos si hay encuentro
                         encuentro();
@@ -1160,7 +1152,7 @@ public class JuegoRol extends JFrame{
                         if(miJugador.pos[1]>9)charX="";
                         if(miJugador.pos[2]>9)charY="";
                         //envio las nuevas posiciones
-                        conexionTopic.SendMessage("pos-"+ miJugador.name+"*"+charMapa+ miJugador.pos[0]+charX+ miJugador.pos[1]+charY+ miJugador.pos[2]);
+                        conexionTopic.sendMessage("pos-"+ miJugador.getName()+"*"+charMapa+ miJugador.pos[0]+charX+ miJugador.pos[1]+charY+ miJugador.pos[2]);
                         DibujarDemasJugadores();
                         //comprobamos que no haya encuentro
                         encuentro();
@@ -1229,7 +1221,7 @@ public class JuegoRol extends JFrame{
                         if(miJugador.pos[0]>9)charMapa="";
                         if(miJugador.pos[1]>9)charX="";
                         if(miJugador.pos[2]>9)charY="";
-                        conexionTopic.SendMessage("pos-"+ miJugador.name+"*"+charMapa+ miJugador.pos[0]+charX+ miJugador.pos[1]+charY+ miJugador.pos[2]);
+                        conexionTopic.sendMessage("pos-"+ miJugador.getName()+"*"+charMapa+ miJugador.pos[0]+charX+ miJugador.pos[1]+charY+ miJugador.pos[2]);
                         DibujarDemasJugadores();
                         encuentro();
                     }
@@ -1262,7 +1254,7 @@ public class JuegoRol extends JFrame{
                         if(miJugador.pos[0]>9)charMapa="";
                         if(miJugador.pos[1]>9)charX="";
                         if(miJugador.pos[2]>9)charY="";
-                        conexionTopic.SendMessage("pos-"+ miJugador.name+"*"+charMapa+ miJugador.pos[0]+charX+ miJugador.pos[1]+charY+ miJugador.pos[2]);
+                        conexionTopic.sendMessage("pos-"+ miJugador.getName()+"*"+charMapa+ miJugador.pos[0]+charX+ miJugador.pos[1]+charY+ miJugador.pos[2]);
                         DibujarDemasJugadores();
                         encuentro();
                     }
@@ -1316,7 +1308,7 @@ public class JuegoRol extends JFrame{
             Enviar.setText("Enviar");
             Enviar.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseClicked(java.awt.event.MouseEvent e) {
-                    conexionTopic.SendMessage("chat-"+ miJugador.name+"*"+ConsolaComandos.getText());
+                    conexionTopic.sendMessage("chat-"+ miJugador.getName()+"*"+ConsolaComandos.getText());
                 }
             });
         }
@@ -1328,7 +1320,7 @@ public class JuegoRol extends JFrame{
      *
      * @return javax.swing.JButton
      */
-    BaseDatos enlace;
+    DataBase enlace;
     private JButton jButton2 = null;
     private JTextField nombrereg = null;
     private JLabel lnombrereg = null;
@@ -1364,15 +1356,15 @@ public class JuegoRol extends JFrame{
             jButton32.setText("Conectar");
             jButton32.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseClicked(java.awt.event.MouseEvent e) {
-                    conexionTopic = new Connections();
-                    conexionTopic.StartConnection();//iniciamos la coneccion
+                    conexionTopic = new ConnectionProcess();
+                    conexionTopic.startConnection();//iniciamos la coneccion
                     jButton32.setVisible(false);
                     nombre.setVisible(false);
                     nombre1.setVisible(false);
                     jButton2.setVisible(false);
                     Consola.setText("conectando");
-                    conexionTopic.SendMessage("bd-"+nombre.getText());
-                    enlace = new BaseDatos();
+                    conexionTopic.sendMessage("bd-"+nombre.getText());
+                    enlace = new DataBase();
                     enlace.start();//lanzamos el hilo que recibe los datos de la bd
                 }
             });
@@ -1534,8 +1526,8 @@ public class JuegoRol extends JFrame{
             Crear.setVisible(false);
             Crear.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseClicked(java.awt.event.MouseEvent e) {
-                    conexionTopic = new Connections();
-                    conexionTopic.StartConnection();
+                    conexionTopic = new ConnectionProcess();
+                    conexionTopic.startConnection();
 
                     System.out.println("newbd-"+nombrereg.getText()+"*"+sexoreg.getSelectedIndex()+bandoreg.getSelectedIndex()+casareg.getSelectedIndex()+imagenreg.getSelectedIndex());
                     //matriz que te dice la casa
@@ -1549,7 +1541,7 @@ public class JuegoRol extends JFrame{
                     imagenes_jug[3][1] = 7;
 
                     //se le envia a la bd los datos para su agregacion
-                    conexionTopic.SendMessage("newbd-"+nombrereg.getText()+"*"+sexoreg.getSelectedIndex()+bandoreg.getSelectedIndex()+casareg.getSelectedIndex()+imagenes_jug[casareg.getSelectedIndex()][sexoreg.getSelectedIndex()]);
+                    conexionTopic.sendMessage("newbd-"+nombrereg.getText()+"*"+sexoreg.getSelectedIndex()+bandoreg.getSelectedIndex()+casareg.getSelectedIndex()+imagenes_jug[casareg.getSelectedIndex()][sexoreg.getSelectedIndex()]);
 
                     jButton32.setVisible(true);
                     nombre.setVisible(true);
@@ -1579,7 +1571,7 @@ public class JuegoRol extends JFrame{
      */
     //procedimiento cuando se pierde contra una criatura actua igual que con perder_combate
     void perdercombate_Criatura(){
-        if (miJugador.bando==0){
+        if (miJugador.getFaction()==0){
             miJugador.pos[0]=3;
         }
         else{
@@ -1603,10 +1595,10 @@ public class JuegoRol extends JFrame{
         vida_rival.setVisible(false);
         accioncombate.setVisible(false);
 
-        mundito[miJugador.pos[0]].DrawMap(jContentPane.getGraphics(), 180, 20);
+        mundito[miJugador.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
         DibujarDemasJugadores();
         miJugador.DrawPlayer(jContentPane.getGraphics());
-        conexionTopic.SendMessage("pos-"+ miJugador.name+"*"+"0"+ miJugador.pos[0]+"0"+ miJugador.pos[1]+"0"+ miJugador.pos[2]);
+        conexionTopic.sendMessage("pos-"+ miJugador.getName()+"*"+"0"+ miJugador.pos[0]+"0"+ miJugador.pos[1]+"0"+ miJugador.pos[2]);
         //conexionTopic.SendMessage("accion-"+miJugador.rival+"*"+6);
         Vida.setText("Vida: "+ miJugador.health);
 
@@ -1639,7 +1631,7 @@ public class JuegoRol extends JFrame{
         vida_rival.setVisible(false);
         accioncombate.setVisible(false);
 
-        mundito[miJugador.pos[0]].DrawMap(jContentPane.getGraphics(), 180, 20);
+        mundito[miJugador.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
         DibujarDemasJugadores();
         miJugador.DrawPlayer(jContentPane.getGraphics());
         Exp.setText("Exp: "+ miJugador.experience);
@@ -1693,7 +1685,7 @@ public class JuegoRol extends JFrame{
         miJugador.fighting= false;
         miJugador.fighting_Profesor= false;
 
-        mundito[miJugador.pos[0]].DrawMap(jContentPane.getGraphics(), 180, 20);
+        mundito[miJugador.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
         DibujarDemasJugadores();
         miJugador.DrawPlayer(jContentPane.getGraphics());
 
@@ -1711,7 +1703,7 @@ public class JuegoRol extends JFrame{
         guion3.setVisible(false);
         pregunta.setVisible(false);
 
-        mundito[miJugador.pos[0]].DrawMap(jContentPane.getGraphics(), 180, 20);
+        mundito[miJugador.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
         DibujarDemasJugadores();
         miJugador.DrawPlayer(jContentPane.getGraphics());
 
@@ -1786,7 +1778,7 @@ public class JuegoRol extends JFrame{
                                 vida_rival.setVisible(false);
                                 accioncombate.setVisible(false);
 
-                                mundito[miJugador.pos[0]].DrawMap(jContentPane.getGraphics(), 180, 20);
+                                mundito[miJugador.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
                                 DibujarDemasJugadores();
                                 miJugador.DrawPlayer(jContentPane.getGraphics());
                                 break;
@@ -1853,7 +1845,7 @@ public class JuegoRol extends JFrame{
                         }
                         else{//combate contra otro usuario
                             if((cursor != 3)||(cursor==3 && miJugador.level>10)){//si no tienes el nivel para ejecutar maldicion no entras
-                                conexionTopic.SendMessage("accion-"+ miJugador.rival+"*"+cursor);//envias la accion
+                                conexionTopic.sendMessage("accion-"+ miJugador.rival+"*"+cursor);//envias la accion
                                 switch (cursor)
                                 {
                                     case 0://si es cero restas la vida del contrario
@@ -1907,7 +1899,7 @@ public class JuegoRol extends JFrame{
                                         vida_rival.setVisible(false);
                                         accioncombate.setVisible(false);
 
-                                        mundito[miJugador.pos[0]].DrawMap(jContentPane.getGraphics(), 180, 20);
+                                        mundito[miJugador.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
                                         DibujarDemasJugadores();
                                         miJugador.DrawPlayer(jContentPane.getGraphics());
                                         miJugador.fighting=false;
@@ -1955,7 +1947,7 @@ public class JuegoRol extends JFrame{
                     if(miJugador.health > 999) charvida3 = "";
                     if(miJugador.level > 9) charnivel = "";
                     //enviamos los datos a la base de datos
-                    conexionTopic.SendMessage("desconectar-"+ miJugador.name+"*"+charMapa+ miJugador.pos[0]+charX+ miJugador.pos[1]+charY+ miJugador.pos[2]+ miJugador.bando+charvida3+charvida2+charvida1+ miJugador.health+charnivel+ miJugador.level+ miJugador.objetos[0]+ miJugador.objetos[1]+ miJugador.objetos[2]+ miJugador.objetos[3]+ miJugador.experience);
+                    conexionTopic.sendMessage("desconectar-"+ miJugador.getName()+"*"+charMapa+ miJugador.pos[0]+charX+ miJugador.pos[1]+charY+ miJugador.pos[2]+ miJugador.getFaction()+charvida3+charvida2+charvida1+ miJugador.health+charnivel+ miJugador.level+ miJugador.objetos[0]+ miJugador.objetos[1]+ miJugador.objetos[2]+ miJugador.objetos[3]+ miJugador.experience);
                 }
             });
         }
