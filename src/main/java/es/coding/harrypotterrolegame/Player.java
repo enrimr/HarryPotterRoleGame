@@ -68,15 +68,15 @@ public class Player{
     }
     //borra al personaje de su posicion debido a que se habra movido y pinta de nuevo la celda
     public void recoverLayer(Graphics g){
-        mundito[pos[0]].mapita[pos[1]][pos[2]].DrawCell(g, x+pos[1]*mapaTam[0]/numCeldas[0], y+pos[2]*mapaTam[1]/numCeldas[1]);
-        mundito[pos[0]].mapita[pos[1]][pos[2]-1].DrawCell(g, x+pos[1]*mapaTam[0]/numCeldas[0], y+(pos[2]-1)*mapaTam[1]/numCeldas[1]);
+        Game.getInstance().world.maps[pos[0]].matrix[pos[1]][pos[2]].drawCell(g, x+pos[1]*mapaTam[0]/Configuration.getInstance().getConfig("map.cell.width"), y+pos[2]*mapaTam[1]/numCeldas[1]);
+        Game.getInstance().world.maps[pos[0]].matrix[pos[1]][pos[2]-1].drawCell(g, x+pos[1]*mapaTam[0]/Configuration.getInstance().getConfig("map.cell.width"), y+(pos[2]-1)*mapaTam[1]/numCeldas[1]);
     }
     //funcion que pinta la imagen del jugador en el mapa con paramtros por defecto
     public void drawPlayer(Graphics g){
         Image img = file.getImage();
         int widthImage = file.getIconWidth();
         int heightImage = file.getIconHeight();
-        g.drawImage(img,x+pos[1]*mapaTam[0]/numCeldas[0],y+pos[2]*mapaTam[1]/numCeldas[1]-(heightImage/escala-mapaTam[1]/numCeldas[1]),widthImage/escala,heightImage/escala,file.getImageObserver());
+        g.drawImage(img,x+pos[1]*mapaTam[0]/Configuration.getInstance().getConfig("map.cell.width"),y+pos[2]*mapaTam[1]/numCeldas[1]-(heightImage/escala-mapaTam[1]/numCeldas[1]),widthImage/escala,heightImage/escala,file.getImageObserver());
     }
     //funcion que pinta la imagen del jugador en el mapa con paramtros pasados por el usuario usado para dibujar los player en el combate
     public void drawPlayer(Graphics g,int esc,int x1,int y1){

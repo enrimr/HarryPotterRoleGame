@@ -24,28 +24,29 @@ public class Configuration {
      Destination destination;
 
      //matriz de imagenes de todos los personajes que hay en el juego
-     String [] playerSprites= {"./imagenes/jugadores/gryffindor_tio.gif",
-            "./imagenes/jugadores/gryffindor_tia.gif",
-            "./imagenes/jugadores/slytherin_tio.gif",
-            "./imagenes/jugadores/slytherin_tia.gif",
-            "./imagenes/jugadores/hufflepuff_tio.gif",
-            "./imagenes/jugadores/hufflepuff_tia.gif",
-            "./imagenes/jugadores/ravenclaw_tio.gif",
-            "./imagenes/jugadores/ravenclaw_tia.gif",
-            "./imagenes/jugadores/harrypotter.gif",
-            "./imagenes/jugadores/snape.gif",
-            "./imagenes/jugadores/nagini.gif",//criatura
-            "./imagenes/jugadores/mcgonagall.gif", //Mc
-            "./imagenes/jugadores/Sprout.gif",
-            "./imagenes/jugadores/flit.gif",
-            "./imagenes/jugadores/lucius.gif",
-            "./imagenes/jugadores/bellatrix.gif",
-            "./imagenes/jugadores/colagusano.gif",
-            "./imagenes/jugadores/umbrig.gif",
-            "./imagenes/jugadores/dumbler.gif",
-            "./imagenes/jugadores/volde.gif",
-            "./imagenes/jugadores/lloron.gif",
-            "./imagenes/jugadores/trol.gif"};
+     String [] playerSprites= {
+            "./images/player/gryffindor_tio.gif",
+            "./images/player/gryffindor_tia.gif",
+            "./images/player/slytherin_tio.gif",
+            "./images/player/slytherin_tia.gif",
+            "./images/player/hufflepuff_tio.gif",
+            "./images/player/hufflepuff_tia.gif",
+            "./images/player/ravenclaw_tio.gif",
+            "./images/player/ravenclaw_tia.gif",
+            "./images/player/harrypotter.gif",
+            "./images/player/snape.gif",
+            "./images/player/nagini.gif",//criatura
+            "./images/player/mcgonagall.gif", //Mc
+            "./images/player/Sprout.gif",
+            "./images/player/flit.gif",
+            "./images/player/lucius.gif",
+            "./images/player/bellatrix.gif",
+            "./images/player/colagusano.gif",
+            "./images/player/umbrig.gif",
+            "./images/player/dumbler.gif",
+            "./images/player/volde.gif",
+            "./images/player/lloron.gif",
+            "./images/player/trol.gif"};
 
     Properties config = new Properties();
 

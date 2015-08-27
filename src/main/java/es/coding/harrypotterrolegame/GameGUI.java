@@ -447,7 +447,7 @@ public class GameGUI extends JFrame{
     }
 
     //procedimiento que dibuja a los demas personajes, criaturas y profesores
-    void DibujarDemasgame.gamePlayers() {
+    void DibujarDemasJugadores() {
         for(int i=0; i < game.gamePlayersLength; i++)
         {
             if(gamePlayers[i].pos[0]== myPlayer.pos[0])
@@ -911,23 +911,23 @@ public class GameGUI extends JFrame{
 //					··················probar mapa·······················
 //					··················probar mapa·······················
 //					 Para dibujar el suelo de Hogwarts y demas mapas
-                    String [] suelohogwarts1 = {"./imagenes/suelo/hogwarts000.gif",
-                            "./imagenes/suelo/hogwarts001.gif",
-                            "./imagenes/suelo/hogwarts002.gif"};
-                    String [] suelohogwarts2 = {"./imagenes/suelo/hogwarts011.gif",
-                            "./imagenes/suelo/hogwarts012.gif",
-                            "./imagenes/suelo/hogwarts010.gif"};
-                    String [] suelobosqueverde = {"./imagenes/suelo/bosque1.gif",
-                            "./imagenes/suelo/bosque2.gif"};
-                    String [] suelobosquemarron = {"./imagenes/suelo/tierra1.gif",
-                            "./imagenes/suelo/tierra2.gif",
-                            "./imagenes/suelo/tierra3.gif"};
-                    String [] suelotenebrosa1 = {"./imagenes/suelo/tenebrosa000.gif",
-                            "./imagenes/suelo/tenebrosa001.gif",
-                            "./imagenes/suelo/tenebrosa002.gif"};
-                    String [] suelotenebrosa2 = {"./imagenes/suelo/tenebrosa011.gif",
-                            "./imagenes/suelo/tenebrosa012.gif",
-                            "./imagenes/suelo/tenebrosa010.gif"};
+                    String [] suelohogwarts1 = {"./images/floor/hogwarts000.gif",
+                            "./images/floor/hogwarts001.gif",
+                            "./images/floor/hogwarts002.gif"};
+                    String [] suelohogwarts2 = {"./images/floor/hogwarts011.gif",
+                            "./images/floor/hogwarts012.gif",
+                            "./images/floor/hogwarts010.gif"};
+                    String [] suelobosqueverde = {"./images/floor/bosque1.gif",
+                            "./images/floor/bosque2.gif"};
+                    String [] suelobosquemarron = {"./images/floor/tierra1.gif",
+                            "./images/floor/tierra2.gif",
+                            "./images/floor/tierra3.gif"};
+                    String [] suelotenebrosa1 = {"./images/floor/tenebrosa000.gif",
+                            "./images/floor/tenebrosa001.gif",
+                            "./images/floor/tenebrosa002.gif"};
+                    String [] suelotenebrosa2 = {"./images/floor/tenebrosa011.gif",
+                            "./images/floor/tenebrosa012.gif",
+                            "./images/floor/tenebrosa010.gif"};
                     int control=0;
                     for (int i=0;i<numCeldas[0];i++){
                         for(int j=0;j<numCeldas[1];j++){

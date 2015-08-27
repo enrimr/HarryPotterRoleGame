@@ -36,7 +36,7 @@ public class Map {
         MapCell[][] cells = new MapCell[this.cellWidth][this.cellHeight];
         for (int i=0;i<this.cellWidth;i++){
             for(int j=0;j<this.cellHeight;j++){
-                cells[i][j] = new MapCell("./imagenes/suelo/hogwarts000.gif",false);
+                cells[i][j] = new MapCell("./images/floor/hogwarts000.gif",false);
             }
         }
         return cells;
