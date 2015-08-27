@@ -4,6 +4,7 @@ import javax.jms.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.util.Random;
 
 //Añadido
@@ -11,29 +12,30 @@ import java.util.Random;
 /**
  * Created by Enri on 24/8/15.
  */
-public class JuegoRol extends JFrame{
-    ConnectionProcess conexionTopic;  //variable que se encarga del paso de mensajes
-    int x=180,y=20; // Coordenadas del punto inicial de la ventana de gráficos
-    int [] mapaTam={450,450}; //tamaño del mapa
-    int [] numCeldas={15,15}; //Celdas del mapa
-    int escala=2; //todo el juego esta en escala 2
+public class GameGUI extends JFrame{
+    ConnectionManager conexionTopic;  //variable que se encarga del paso de mensajes
+    Game game = Game.getInstance();
+    Player myPlayer = game.myPlayer;
+    Player[] gamePlayers = game.gamePlayers;
+
     //int [][][] mapa = new int[9][numCeldas[0]][numCeldas[1]];
-    Player [] jugadores= new Player[100]; //Vector de otro de jugadores
-    int puntero=0; //indica la primera posicion vacia del vector de player
+
     Map[] mundito=new Map[9]; //variable que guarda los mapas
-    int nummap=9; //numeros de mapas del juego
+    //int nummap=9; //numeros de mapas del juego
     String [] datos = new String[3]; //variable usada para pasar datos a la hora combatir
 
+    Configuration config = Configuration.getInstance();
 
     void refresh(){ //procedimiento que refresca el escenario
-        if(!miJugador.fighting){ //si el jugador no se encuentra en batalla
-            //volvemos a pintar el mapa y al resto de jugadores
-            mundito[miJugador.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
-            DibujarDemasJugadores();
-            miJugador.DrawPlayer(jContentPane.getGraphics());
+
+        if(!myPlayer.isFighting){ //si el jugador no se encuentra en batalla
+            //volvemos a pintar el mapa y al resto de game.gamePlayers
+            mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
+            DibujarDemasgame.gamePlayers();
+            myPlayer.drawPlayer(jContentPane.getGraphics());
         }
         else{
-            if((!miJugador.fighting_Criatura)&&(!miJugador.fighting_Profesor)){//si esta luchando
+            if((!myPlayer.isFightingVersusCriature)&&(!myPlayer.isFightingVersusProfessor)){//si esta luchando
                 //Pintamos todos los labels afectados en la batalla
                 switch(cursor){
                     case 0:
@@ -77,12 +79,12 @@ public class JuegoRol extends JFrame{
                 vida_rival.setVisible(true);
                 exp_rival.setVisible(true);
 
-                //Volvemos a pintar el fondo de la batalla y a los jugadores combatientes
+                //Volvemos a pintar el fondo de la batalla y a los game.gamePlayers combatientes
                 drawBackground("./imagenes/fondos/duelo.gif");
-                jugadores[miJugador.rivalID].DrawPlayer(jContentPane.getGraphics(),2,300,50);
-                miJugador.DrawPlayer(jContentPane.getGraphics(),1,70,70);
+                gamePlayers[myPlayer.enemyId].drawPlayer(jContentPane.getGraphics(), 2, 300, 50);
+                myPlayer.drawPlayer(jContentPane.getGraphics(), 1, 70, 70);
             }
-            if(miJugador.fighting_Criatura){//si esta luchando con una criatura hacemos lo mismo que anteriormente
+            if(myPlayer.isFightingVersusCriature){//si esta luchando con una criatura hacemos lo mismo que anteriormente
                 switch(cursor){
                     case 0:
                         guion1.setVisible(false);
@@ -126,8 +128,8 @@ public class JuegoRol extends JFrame{
                 exp_rival.setVisible(true);
 
                 jContentPane.getGraphics().clearRect(x, y, mapaTam[0], mapaTam[1]);
-                criaturas[miJugador.rivalID].DrawPlayer(jContentPane.getGraphics(),2,300,50);
-                miJugador.DrawPlayer(jContentPane.getGraphics(),1,70,70);
+                criaturas[myPlayer.enemyId].DrawPlayer(jContentPane.getGraphics(),2,300,50);
+                myPlayer.drawPlayer(jContentPane.getGraphics(), 1, 70, 70);
             }
         }
     }
@@ -141,50 +143,37 @@ public class JuegoRol extends JFrame{
         jContentPane.getGraphics().drawImage(img,180+30, 20+15,anchoImagen,altoImagen,imagen.getImageObserver());
     }
 
-    //Declaracion e inicializacion de los distintos escenarios
-    Map map1 = new Map(mapaTam[0],mapaTam[1],numCeldas[0],numCeldas[1]);  //  @jve:decl-index=0:
-    Map map2 = new Map(mapaTam[0],mapaTam[1],numCeldas[0],numCeldas[1]);
-    Map mapbosque = new Map(mapaTam[0],mapaTam[1],numCeldas[0],numCeldas[1]);  //  @jve:decl-index=0:
-    Map mapbosquecamino = new Map(mapaTam[0],mapaTam[1],numCeldas[0],numCeldas[1]);  //  @jve:decl-index=0:
-
-    //declaracion de variables player usadas. Mi jugador, las criaturas y los profesores
-    Player miJugador;
-    Player [] criaturas= new Player[10];
-    Player [] profesores= new Player[10];
-
-
-
     int i=0;
 
     //funcion que nos indica si un personaje ya esta insertado en nuestro vector
     private boolean esta(String nombre){
         int aux=0;
         System.out.println("esta: "+nombre+ "--> Lo que le entra al esta");
-        while(aux<puntero && !jugadores[aux].getName().equals(nombre))
+        while(aux < game.gamePlayersLength && !gamePlayers[aux].getName().equals(nombre))
         {
             aux++;
-            System.out.println(aux+jugadores[aux].getName());
+            System.out.println(aux+gamePlayers[aux].getName());
         }
-        return aux<puntero;
+        return aux < game.gamePlayersLength;
     }
 
-    //procedimiento que busca al rival y carga sus datos
+    //procedimiento que busca al enemy y carga sus datos
     void buscarImagen(String nombre_rival){
         int aux=0;
-        //buscamos al rival
-        while(!jugadores[aux].getName().equals(nombre_rival))
+        //buscamos al enemy
+        while(!gamePlayers[aux].getName().equals(nombre_rival))
         {
             aux++;
         }
-        //dibujamos a los jugadores en el area de combate
-        jugadores[aux].DrawPlayer(jContentPane.getGraphics(),2,300,50);
-        miJugador.DrawPlayer(jContentPane.getGraphics(), 1, 70, 70);
+        //dibujamos a los game.gamePlayers en el area de combate
+        gamePlayers[aux].drawPlayer(jContentPane.getGraphics(), 2, 300, 50);
+        myPlayer.drawPlayer(jContentPane.getGraphics(), 1, 70, 70);
         //cargamos los datos convenientes
-        miJugador.rival=jugadores[aux].getName();
+        myPlayer.enemy = gamePlayers[aux].getName();
 
-        miJugador.rivalID = aux;
+        myPlayer.enemyId = aux;
         char []r6 =datos[0].toCharArray();
-        jugadores[aux].setFaction((int)r6[0]-48);
+        gamePlayers[aux].setFaction((int)r6[0]-48);
 
         char []r7 =datos[2].toCharArray();
         int a=1;
@@ -193,26 +182,26 @@ public class JuegoRol extends JFrame{
             a = a*10;
         }
 
-        jugadores[aux].health=0;
+        gamePlayers[aux].health=0;
         for(int i=0; i< r7.length; i++)
         {
             int w = (int)r7[i]- 48;
-            jugadores[aux].health += a * w;
+            gamePlayers[aux].health += a * w;
             a = a / 10;
         }
 
         char []r8=datos[1].toCharArray();
-        jugadores[aux].level= (int)r8[0]-48;
+        gamePlayers[aux].level= (int)r8[0]-48;
 
         //preparamos los labels implicados en el combate
-        vida_rival.setText("Vida: "+jugadores[aux].health);
-        exp_rival.setText("Nivel: "+jugadores[aux].level);
+        vida_rival.setText("Vida: "+gamePlayers[aux].health);
+        exp_rival.setText("Nivel: "+gamePlayers[aux].level);
         vida_rival.setVisible(true);
         exp_rival.setVisible(true);
 
     }
 
-    //procedimiento que prepara el escenario para un combate entre dos jugadores
+    //procedimiento que prepara el escenario para un combate entre dos game.gamePlayers
     void combate(String rival){
         //pintamos el fondo del combate
         jContentPane.getGraphics().clearRect(x, y, mapaTam[0], mapaTam[1]);
@@ -232,11 +221,12 @@ public class JuegoRol extends JFrame{
     }
 
     //	procedimiento que prepara el escenario para un combate contra criaturas
-    void combate_criatura(int rival){
+    void combatVersusCriature(int rival){
+        
         //decimos que estamos peleando contra uan criatura
-        miJugador.fighting=true;
-        miJugador.fighting_Criatura=true;
-        criaturas[rival].fighting=true;
+        myPlayer.isFighting =true;
+        myPlayer.isFightingVersusCriature =true;
+        criaturas[rival].isFighting =true;
         //habilitamos las funciones del combate
         cursor=0;
         accioncombate.setVisible(true);
@@ -250,10 +240,10 @@ public class JuegoRol extends JFrame{
         jContentPane.getGraphics().clearRect(x, y, mapaTam[0], mapaTam[1]);
         //pintamos a la criatura y al personaje
         criaturas[rival].DrawPlayer(jContentPane.getGraphics(),2,300,50);
-        miJugador.DrawPlayer(jContentPane.getGraphics(), 1, 70, 70);
+        myPlayer.drawPlayer(jContentPane.getGraphics(), 1, 70, 70);
         //guardamos sus datos e imprimos su vida y su nivel
-        miJugador.rival=criaturas[rival].getName();
-        miJugador.rivalID=rival;
+        myPlayer.enemy =criaturas[rival].getName();
+        myPlayer.enemyId =rival;
 
         vida_rival.setText("Vida: "+criaturas[rival].health);
         exp_rival.setText("Nivel: "+criaturas[rival].level);
@@ -268,14 +258,15 @@ public class JuegoRol extends JFrame{
             "¿Librería usada para el paso de mensajes?  1.JMS\n  2.Socket\n  3.Topics\n",
             "¿Transformada de Laplace de la funcion escalón\n 1.s+2/s 2.1/s+1 3.1/s"};
     //vector que guarda las respuestas correctas de las preguntas
-    int []soluciones = {2, 1, 3};
+    int [] soluciones = {2, 1, 3};
 
     //procedimiento que se encarga de la interaccion con los profesores
-    void pregunta_profesores(int rival){
+    void askProfessor(int rival){
+
         //decimos que estamos hablando con un profesor
-        miJugador.fighting=true;
-        miJugador.fighting_Profesor=true;
-        profesores[rival].fighting=true;
+        myPlayer.isFighting =true;
+        myPlayer.isFightingVersusProfessor =true;
+        profesores[rival].isFighting =true;
         //imprimimos las opciones de las preguntas
         cursor=0;
         opcion1.setVisible(true);
@@ -287,22 +278,22 @@ public class JuegoRol extends JFrame{
 
         jContentPane.getGraphics().clearRect(x, y, mapaTam[0], mapaTam[1]);
 
-        //profesores[rival].DrawPlayer(jContentPane.getGraphics(),2,300,50);
-        //miJugador.DrawPlayer(jContentPane.getGraphics(),1,70,70);
-        miJugador.rival=profesores[rival].getName();
-        miJugador.rivalID=rival;
+        //profesores[enemy].drawPlayer(jContentPane.getGraphics(),2,300,50);
+        //myPlayer.drawPlayer(jContentPane.getGraphics(),1,70,70);
+        myPlayer.enemy = profesores[rival].getName();
+        myPlayer.enemyId = rival;
 
         Random randomGenerator = new Random();
         //escogemos aleatoriamente una pregunta y la imprimimos
         int randomInt = randomGenerator.nextInt(2);
         if(rival<8){
             pregunta.setText(preguntas[randomInt]);
-            miJugador.pregunta= randomInt;
+            myPlayer.pregunta= randomInt;
             pregunta.setVisible(true);
         }
         else{//si se trata de dumblerdore o voldemort imprimimos una pregunta dificil
             pregunta.setText(preguntas[2]);
-            miJugador.pregunta= 2;
+            myPlayer.pregunta= 2;
             pregunta.setVisible(true);
         }
 
@@ -310,25 +301,26 @@ public class JuegoRol extends JFrame{
 
     //procedimiento que controla si nos encontramos con alguien en el mapa
     void encuentro(){
+
         //vemos si nos encontramos con algun jugador
-        for (int i=0; i<puntero; i++){
-            if((jugadores[i].pos[0]== miJugador.pos[0])&&(jugadores[i].pos[1]== miJugador.pos[1])&&(jugadores[i].pos[2]== miJugador.pos[2])){
+        for (int i=0; i<game.gamePlayersLength; i++){
+            if((gamePlayers[i].pos[0]== myPlayer.pos[0])&&(gamePlayers[i].pos[1]== myPlayer.pos[1])&&(gamePlayers[i].pos[2]== myPlayer.pos[2])){
                 //si nos encontramos con alguien le mandamos el mensaje de combate
-                conexionTopic.sendMessage("combate-"+jugadores[i].getName()+"*"+ miJugador.getName()+"$"+ miJugador.getFaction()+ miJugador.level+"%"+ miJugador.health);
-                //combate(jugadores[i].name);
+                conexionTopic.sendMessage("combate-"+gamePlayers[i].getName()+"*"+ myPlayer.getName()+"$"+ myPlayer.getFaction()+ myPlayer.level+"%"+ myPlayer.health);
+                //combate(game.gamePlayers[i].name);
             }
         }
         //comprobamos si nos encontramos con alguna criatura
         for (int i=0; i<10; i++){
-            if((criaturas[i].pos[0]== miJugador.pos[0])&&(criaturas[i].pos[1]== miJugador.pos[1])&&(criaturas[i].pos[2]== miJugador.pos[2])){
-                combate_criatura(i);
+            if((criaturas[i].pos[0]== myPlayer.pos[0])&&(criaturas[i].pos[1]== myPlayer.pos[1])&&(criaturas[i].pos[2]== myPlayer.pos[2])){
+                combatVersusCriature(i);
             }
         }
         //comprobamos si nos encontramos con algun profesor y si es de nuestra casa y bando para hablar con el
         for (int i=0; i<10; i++){
-            if((profesores[i].pos[0]== miJugador.pos[0])&&(profesores[i].pos[1]== miJugador.pos[1])&&(profesores[i].pos[2]== miJugador.pos[2])){
-                if(((profesores[i].getHouse() == miJugador.getHouse())||(profesores[i].getHouse() == -1))&&(profesores[i].getFaction() == miJugador.getFaction())){
-                    pregunta_profesores(i);
+            if((profesores[i].pos[0]== myPlayer.pos[0])&&(profesores[i].pos[1]== myPlayer.pos[1])&&(profesores[i].pos[2]== myPlayer.pos[2])){
+                if(((profesores[i].getHouse() == myPlayer.getHouse())||(profesores[i].getHouse() == -1))&&(profesores[i].getFaction() == myPlayer.getFaction())){
+                    askProfessor(i);
                 }
                 else{
                     Consola.setText("No puedes hablar con este profesor no es de tu casa");
@@ -338,32 +330,34 @@ public class JuegoRol extends JFrame{
         }
     }
 
-    //funcion que actualiza las posiciones de los demas jugadores
+    //funcion que actualiza las posiciones de los demas game.gamePlayers
     void actualiza(String nombre, int coordMapa, int coordX, int coordY){
+        Player myPlayer = Game.getInstance().myPlayer;
+
         int i = 0;
         //buscamos al personaje que se movio
-        while (!jugadores[i].name.equals(nombre)){
+        while (!gamePlayers[i].getName().equals(nombre)){
             i++;
         }
         //una vez encontrado lo borramos de su posicion actual
-        if ((miJugador.pos[0]==jugadores[i].pos[0])&&(!miJugador.fighting))
-            jugadores[i].RecoverLayer(jContentPane.getGraphics());
+        if ((myPlayer.pos[0]==gamePlayers[i].pos[0])&&(!myPlayer.isFighting))
+            gamePlayers[i].recoverLayer(jContentPane.getGraphics());
         //actualizamos su posicion
-        jugadores[i].pos[0]= coordMapa;
-        jugadores[i].pos[1]= coordX;
-        jugadores[i].pos[2]= coordY;
+        gamePlayers[i].pos[0]= coordMapa;
+        gamePlayers[i].pos[1]= coordX;
+        gamePlayers[i].pos[2]= coordY;
         //volvemos a pintar al jugador en su nueva posicion
-        if ((miJugador.pos[0]==jugadores[i].pos[0])&&(!miJugador.fighting))
-            jugadores[i].DrawPlayer(jContentPane.getGraphics());
+        if ((myPlayer.pos[0]==gamePlayers[i].pos[0])&&(!myPlayer.isFighting))
+            gamePlayers[i].drawPlayer(jContentPane.getGraphics());
     }
 
-    //clase que controla los mensajes de movimiento y de coneccion
+    //clase que controla los mensajes de movimiento y de conexion
     class TestTh extends Thread {
         public void run() {
             try {
                 //start the connection to enable message delivery
-                connection.start();
-                MessageConsumer receiver = session.createConsumer(destination);
+                config.connection.start();
+                MessageConsumer receiver = config.session.createConsumer(config.destination);
                 receiver.setMessageListener(new MessageListener() {
                     public void onMessage(Message message) {
                         try{
@@ -377,7 +371,7 @@ public class JuegoRol extends JFrame{
                                 indice = textoRecibido.indexOf("-");
                                 String Nombre=textoRecibido.substring(indice+1, textoRecibido.indexOf("*"));
                                 //Comprobamos que el mensaje no lo haya enviado yo
-                                if (!miJugador.getName().equals(Nombre)){
+                                if (!myPlayer.getName().equals(Nombre)){
                                     if(!esta(Nombre)){
                                         //si no soy yo y no esta ya agregado obtengo sus datos
                                         String Mapa= textoRecibido.substring(textoRecibido.indexOf("*")+1,textoRecibido.indexOf("*")+3);
@@ -394,24 +388,25 @@ public class JuegoRol extends JFrame{
                                         char []r3=img.toCharArray();
                                         int imgnum= (int)r3[0]*10+(int)r3[1]-528;
                                         //creamos en la posicion adecuado al nuevo player
-                                        jugadores[puntero] = new Player(Nombre, coordMapa, coordX, coordY, imgnum);
-                                        System.out.println("Prueba: "+jugadores[puntero].getName());
+                                        gamePlayers[game.gamePlayersLength] = new Player(Nombre, coordMapa, coordX, coordY, imgnum);
+                                        System.out.println("Prueba: "+gamePlayers[game.gamePlayersLength].getName());
                                         String charX="0";
                                         String charY="0";
                                         String charMapa="0";
                                         String charimg="0";
 
-                                        if(miJugador.pos[0]>9)charMapa="";
-                                        if(miJugador.pos[1]>9)charX="";
-                                        if(miJugador.pos[2]>9)charY="";
-                                        if(miJugador.imagen>9)charimg="";
+                                        if(myPlayer.pos[0] > 9) charMapa="";
+                                        if(myPlayer.pos[1] > 9) charX="";
+                                        if(myPlayer.pos[2] > 9) charY="";
+                                        if(myPlayer.getSprite() > 9)charimg="";
+
                                         //le enviamos un mensaje con mis datos para que me agregue
-                                        conexionTopic.sendMessage("conectar-"+ miJugador.getName()+"*"+charMapa+ miJugador.pos[0]+charX+ miJugador.pos[1]+charY+ miJugador.pos[2]+charimg+ miJugador.imagen);
+                                        conexionTopic.sendMessage("conectar-"+ myPlayer.getName()+"*"+charMapa+ myPlayer.pos[0]+charX+ myPlayer.pos[1]+charY+ myPlayer.pos[2]+charimg+ myPlayer.getSprite());
                                         //pintamos al nuevo jugador para poder verlo
-                                        if (miJugador.pos[0]==jugadores[puntero].pos[0]){
-                                            jugadores[puntero].DrawPlayer(jContentPane.getGraphics());
+                                        if (myPlayer.pos[0]==gamePlayers[game.gamePlayersLength].pos[0]){
+                                            gamePlayers[game.gamePlayersLength].drawPlayer(jContentPane.getGraphics());
                                         }
-                                        puntero++; //incrementamos la posicion del vector de jugadores ya que ahora hay uno mas
+                                        game.gamePlayersLength++; //incrementamos la posicion del vector de game.gamePlayers ya que ahora hay uno mas
                                     }
                                 }
                             }
@@ -419,7 +414,7 @@ public class JuegoRol extends JFrame{
                                 indice = textoRecibido.indexOf("pos");
                                 //si se recibe pos indica que un jugador se ha movido
                                 if (indice != -1){
-                                    String xino = miJugador.getName();
+                                    String xino = myPlayer.getName();
                                     //si no soy yo recojo los datos enviados
                                     if (!xino.equals(textoRecibido.substring(textoRecibido.indexOf("-")+1,textoRecibido.indexOf("*")))){
                                         String Nombre=textoRecibido.substring(textoRecibido.indexOf("-")+1,textoRecibido.indexOf("*"));
@@ -452,20 +447,20 @@ public class JuegoRol extends JFrame{
     }
 
     //procedimiento que dibuja a los demas personajes, criaturas y profesores
-    void DibujarDemasJugadores() {
-        for(int i=0; i<puntero; i++)
+    void DibujarDemasgame.gamePlayers() {
+        for(int i=0; i < game.gamePlayersLength; i++)
         {
-            if(jugadores[i].pos[0]== miJugador.pos[0])
-                jugadores[i].DrawPlayer(jContentPane.getGraphics());
+            if(gamePlayers[i].pos[0]== myPlayer.pos[0])
+                gamePlayers[i].drawPlayer(jContentPane.getGraphics());
         }
         for(int i=0; i<10; i++)
         {
-            if(criaturas[i].pos[0]== miJugador.pos[0])
+            if(criaturas[i].pos[0]== myPlayer.pos[0])
                 criaturas[i].DrawPlayer(jContentPane.getGraphics());
         }
         for(int i=0; i<10; i++)
         {
-            if(profesores[i].pos[0]== miJugador.pos[0])
+            if(profesores[i].pos[0]== myPlayer.pos[0])
                 profesores[i].DrawPlayer(jContentPane.getGraphics());
         }
 
@@ -474,30 +469,30 @@ public class JuegoRol extends JFrame{
     //moviemiento hacia arriba
     void PlayerUp(){
         //Comprobamos si cambiará de mapa
-        if (miJugador.pos[2]==1){
-            if(miJugador.pos[0]==0 || miJugador.pos[0]==1|| miJugador.pos[0]==2)//comprobamos que no nos chocamos
+        if (myPlayer.pos[2]==1){
+            if(myPlayer.pos[0]==0 || myPlayer.pos[0]==1|| myPlayer.pos[0]==2)//comprobamos que no nos chocamos
                 Consola.setText("PlayerUP(): Llegó al límite superior de un mapa");
-            else if(!mundito[miJugador.pos[0]-3].mapita[miJugador.pos[1]][miJugador.pos[2]].isBlocked){
+            else if(!mundito[myPlayer.pos[0]-3].mapita[myPlayer.pos[1]][myPlayer.pos[2]].isBlocked){
                 //cambiamos de mapa
-                miJugador.pos[0]-=3;
-                miJugador.pos[2]=(numCeldas[1]-1);//eSTABA EN -1
-                Consola.setText("Estamos en el mapa:" + miJugador.pos[0]);
+                myPlayer.pos[0]-=3;
+                myPlayer.pos[2]=(numCeldas[1]-1);//eSTABA EN -1
+                Consola.setText("Estamos en el mapa:" + myPlayer.pos[0]);
                 jContentPane.getGraphics().clearRect(180,20,200,200);
-                mundito[miJugador.pos[0]].drawMap(jContentPane.getGraphics(), x, y);
-                miJugador.DrawPlayer(jContentPane.getGraphics());
+                mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), x, y);
+                myPlayer.DrawPlayer(jContentPane.getGraphics());
 
-                miJugador.DrawPlayerPos();
+                myPlayer.DrawPlayerPos();
             }
             //si hay un obstaculo en el otro mapa no puedes pasar
             else {Consola.setText("PlayerUP(): hay un obstáculo en el otro mapa");}
         }
         // Si no hay obstáculo nos movemos
-        else if (!mundito[miJugador.pos[0]].mapita[miJugador.pos[1]][miJugador.pos[2]-1].isBlocked){
+        else if (!mundito[myPlayer.pos[0]].mapita[myPlayer.pos[1]][myPlayer.pos[2]-1].isBlocked){
             Consola.setText("");
-            miJugador.RecoverLayer(jContentPane.getGraphics());//RecoverLayer();
-            miJugador.pos[2]-=1;
-            miJugador.DrawPlayer(jContentPane.getGraphics());
-            miJugador.DrawPlayerPos();
+            myPlayer.RecoverLayer(jContentPane.getGraphics());//recoverLayer();
+            myPlayer.pos[2]-=1;
+            myPlayer.DrawPlayer(jContentPane.getGraphics());
+            myPlayer.DrawPlayerPos();
         }
         else {//sino decimos que nos chocamos
             Consola.setText("PlayerUP(): Se chocó");
@@ -506,29 +501,29 @@ public class JuegoRol extends JFrame{
 
     void PlayerDown(){
         //Comprobamos si cambiará de mapa
-        if ((miJugador.pos[2])==(numCeldas[1])-1){
-            if(miJugador.pos[0]==6 || miJugador.pos[0]==7|| miJugador.pos[0]==8)//comprobamos que no estamos en el limite
+        if ((myPlayer.pos[2])==(numCeldas[1])-1){
+            if(myPlayer.pos[0]==6 || myPlayer.pos[0]==7|| myPlayer.pos[0]==8)//comprobamos que no estamos en el limite
                 Consola.setText("PlayerUP(): Llegó al límite inferior de un mapa");
-            else if(!mundito[miJugador.pos[0]+3].mapita[miJugador.pos[1]][0].isBlocked && !mundito[miJugador.pos[0]+3].mapita[miJugador.pos[1]][1].isBlocked){ //Antes no estaba el &&
+            else if(!mundito[myPlayer.pos[0]+3].mapita[myPlayer.pos[1]][0].isBlocked && !mundito[myPlayer.pos[0]+3].mapita[myPlayer.pos[1]][1].isBlocked){ //Antes no estaba el &&
                 //				Cambiamos de mapa
-                miJugador.pos[0]+=3;
-                miJugador.pos[2]=1;
-                Consola.setText("Estamos en el mapa:" + miJugador.pos[0]);
+                myPlayer.pos[0]+=3;
+                myPlayer.pos[2]=1;
+                Consola.setText("Estamos en el mapa:" + myPlayer.pos[0]);
                 jContentPane.getGraphics().clearRect(180,20,200,200);
-                mundito[miJugador.pos[0]].drawMap(jContentPane.getGraphics(), x, y);
-                miJugador.DrawPlayer(jContentPane.getGraphics());
-                miJugador.DrawPlayerPos();
+                mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), x, y);
+                myPlayer.DrawPlayer(jContentPane.getGraphics());
+                myPlayer.DrawPlayerPos();
             }
             //			si hay un obstaculo en el otro mapa no puedes pasar
             else {Consola.setText("PlayerDown(): hay un obstáculo en el otro mapa");}
         }
         //si no hay obstaculo nos movemos
-        else if (!mundito[miJugador.pos[0]].mapita[miJugador.pos[1]][miJugador.pos[2]+1].isBlocked){//Bedebia ser JugPos[2]+1
+        else if (!mundito[myPlayer.pos[0]].mapita[myPlayer.pos[1]][myPlayer.pos[2]+1].isBlocked){//Bedebia ser JugPos[2]+1
             Consola.setText("");
-            miJugador.RecoverLayer(jContentPane.getGraphics());
-            miJugador.pos[2]+=1;
-            miJugador.DrawPlayer(jContentPane.getGraphics());
-            miJugador.DrawPlayerPos();
+            myPlayer.RecoverLayer(jContentPane.getGraphics());
+            myPlayer.pos[2]+=1;
+            myPlayer.DrawPlayer(jContentPane.getGraphics());
+            myPlayer.DrawPlayerPos();
         }
         //sino decimos que nos chocamos
         else Consola.setText("PlayerDown(): Se chocó");
@@ -536,29 +531,29 @@ public class JuegoRol extends JFrame{
 
     void PlayerRight(){
         //Comprobamos si cambiará de mapa
-        if (miJugador.pos[1]==(numCeldas[0]-1)){
-            if(miJugador.pos[0]==2 || miJugador.pos[0]==5|| miJugador.pos[0]==8)//comprobamos que hay mas mapas
+        if (myPlayer.pos[1]==(numCeldas[0]-1)){
+            if(myPlayer.pos[0]==2 || myPlayer.pos[0]==5|| myPlayer.pos[0]==8)//comprobamos que hay mas mapas
                 Consola.setText("PlayerUP(): Llegó al límite derecho del mundo");
-            else if(!mundito[miJugador.pos[0]+1].mapita[0][miJugador.pos[2]].isBlocked){
+            else if(!mundito[myPlayer.pos[0]+1].mapita[0][myPlayer.pos[2]].isBlocked){
                 //Cambiamos de mapa
-                miJugador.pos[0]+=1;
-                miJugador.pos[1]=0;
-                Consola.setText("Estamos en el mapa:" + miJugador.pos[0]);
+                myPlayer.pos[0]+=1;
+                myPlayer.pos[1]=0;
+                Consola.setText("Estamos en el mapa:" + myPlayer.pos[0]);
                 jContentPane.getGraphics().clearRect(180,20,200,200);
-                mundito[miJugador.pos[0]].drawMap(jContentPane.getGraphics(), x, y);
-                miJugador.DrawPlayer(jContentPane.getGraphics());
-                miJugador.DrawPlayerPos();
+                mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), x, y);
+                myPlayer.DrawPlayer(jContentPane.getGraphics());
+                myPlayer.DrawPlayerPos();
             }
             else {Consola.setText("PlayerRight(): hay un obstáculo en el otro mapa");}
             // Comprobamos si puede ir a una mapa válido
 
         }//sin no hay obstaculo nos movemos
-        else if (!mundito[miJugador.pos[0]].mapita[miJugador.pos[1]+1][miJugador.pos[2]].isBlocked && !mundito[miJugador.pos[0]].mapita[miJugador.pos[1]+1][miJugador.pos[2]+1].isBlocked) {//mIRAMOS LOS PIES
+        else if (!mundito[myPlayer.pos[0]].mapita[myPlayer.pos[1]+1][myPlayer.pos[2]].isBlocked && !mundito[myPlayer.pos[0]].mapita[myPlayer.pos[1]+1][myPlayer.pos[2]+1].isBlocked) {//mIRAMOS LOS PIES
             Consola.setText("");
-            miJugador.RecoverLayer(jContentPane.getGraphics());
-            miJugador.pos[1]+=1;
-            miJugador.DrawPlayer(jContentPane.getGraphics());
-            miJugador.DrawPlayerPos();
+            myPlayer.RecoverLayer(jContentPane.getGraphics());
+            myPlayer.pos[1]+=1;
+            myPlayer.DrawPlayer(jContentPane.getGraphics());
+            myPlayer.DrawPlayerPos();
         }
         else//si hay obstaculo le decimos que ha chocado
             Consola.setText("PlayerRight(): Se chocó");
@@ -566,29 +561,29 @@ public class JuegoRol extends JFrame{
 
     void PlayerLeft(){
         //Comprobamos si cambiará de mapa
-        if (miJugador.pos[1]==0){
-            if(miJugador.pos[0]==0 || miJugador.pos[0]==3|| miJugador.pos[0]==6)//Se mira si hay otro mapa
+        if (myPlayer.pos[1]==0){
+            if(myPlayer.pos[0]==0 || myPlayer.pos[0]==3|| myPlayer.pos[0]==6)//Se mira si hay otro mapa
                 Consola.setText("PlayerUP(): Llegó al límite inzquierdo del mundo");
-            else if(!mundito[miJugador.pos[0]-1].mapita[(numCeldas[0]-1)][miJugador.pos[2]].isBlocked){
+            else if(!mundito[myPlayer.pos[0]-1].mapita[(numCeldas[0]-1)][myPlayer.pos[2]].isBlocked){
                 //				//cambiamos de mapa
-                miJugador.pos[0]-=1;
-                miJugador.pos[1]=(numCeldas[1]-1);
-                Consola.setText("Estamos en el mapa:" + miJugador.pos[0]);
+                myPlayer.pos[0]-=1;
+                myPlayer.pos[1]=(numCeldas[1]-1);
+                Consola.setText("Estamos en el mapa:" + myPlayer.pos[0]);
                 jContentPane.getGraphics().clearRect(180,20,200,200);
-                mundito[miJugador.pos[0]].drawMap(jContentPane.getGraphics(), x, y);
-                miJugador.DrawPlayer(jContentPane.getGraphics());
-                miJugador.DrawPlayerPos();
+                mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), x, y);
+                myPlayer.DrawPlayer(jContentPane.getGraphics());
+                myPlayer.DrawPlayerPos();
             }
             else {Consola.setText("PlayerLeft(): hay un obstáculo en el otro mapa");}
             // Comprobamos si puede ir a una mapa válido
 
         }//si no hay obstaculo nos movemos
-        else if (!mundito[miJugador.pos[0]].mapita[miJugador.pos[1]-1][miJugador.pos[2]].isBlocked && !mundito[miJugador.pos[0]].mapita[miJugador.pos[1]-1][miJugador.pos[2]-1].isBlocked){
+        else if (!mundito[myPlayer.pos[0]].mapita[myPlayer.pos[1]-1][myPlayer.pos[2]].isBlocked && !mundito[myPlayer.pos[0]].mapita[myPlayer.pos[1]-1][myPlayer.pos[2]-1].isBlocked){
             Consola.setText("");
-            miJugador.RecoverLayer(jContentPane.getGraphics());
-            miJugador.pos[1]-=1;
-            miJugador.DrawPlayer(jContentPane.getGraphics());
-            miJugador.DrawPlayerPos();
+            myPlayer.RecoverLayer(jContentPane.getGraphics());
+            myPlayer.pos[1]-=1;
+            myPlayer.DrawPlayer(jContentPane.getGraphics());
+            myPlayer.DrawPlayerPos();
         }
         else Consola.setText("PlayerLeft(): Se chocó");//sino le decimos que no puede continuar
     }
@@ -618,7 +613,7 @@ public class JuegoRol extends JFrame{
     /**
      * This is the default constructor
      */
-    public JuegoRol() {
+    public GameGUI() {
         super();
         initialize();
     }
@@ -896,7 +891,7 @@ public class JuegoRol extends JFrame{
             jButton1.setText("Jugar");
             jButton1.setVisible(false);
             jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
-                public void mouseClicked(java.awt.event.MouseEvent e) {
+                public void mouseClicked(MouseEvent e) {
 
 					/*PAlexis = new Alexis();
 
@@ -937,9 +932,9 @@ public class JuegoRol extends JFrame{
                     for (int i=0;i<numCeldas[0];i++){
                         for(int j=0;j<numCeldas[1];j++){
                             if (i%2==0)
-                                map1.mapita[j][i] = new MapCell(suelohogwarts1[control],false);
+                                map1.matrix[j][i] = new MapCell(suelohogwarts1[control],false);
                             else
-                                map1.mapita[j][i] = new MapCell(suelohogwarts2[control],false);
+                                map1.matrix[j][i] = new MapCell(suelohogwarts2[control],false);
                             if (control==2) control=0;
                             else control++;
                         }
@@ -947,47 +942,47 @@ public class JuegoRol extends JFrame{
 
                     for (int i=0;i<numCeldas[0];i++){
                         for(int j=0;j<numCeldas[1];j++){
-                            mapbosque.mapita[j][i] = new MapCell(suelobosqueverde[0],false);
-                            mapbosquecamino.mapita[j][i] = new MapCell(suelobosqueverde[1],false);
+                            mapbosque.matrix[j][i] = new MapCell(suelobosqueverde[0],false);
+                            mapbosquecamino.matrix[j][i] = new MapCell(suelobosqueverde[1],false);
                         }
                     }
                     //preguntar por enrik
-                    mapbosquecamino.mapita[0][7] = new MapCell(suelobosquemarron[1],false);
-                    mapbosquecamino.mapita[0][8] = new MapCell(suelobosquemarron[0],false);
-                    mapbosquecamino.mapita[1][7] = new MapCell(suelobosquemarron[0],false);
-                    mapbosquecamino.mapita[1][8] = new MapCell(suelobosquemarron[0],false);
-                    mapbosquecamino.mapita[2][7] = new MapCell(suelobosquemarron[1],false);
-                    mapbosquecamino.mapita[2][8] = new MapCell(suelobosquemarron[1],false);
-                    mapbosquecamino.mapita[3][7] = new MapCell(suelobosquemarron[2],false);
-                    mapbosquecamino.mapita[3][8] = new MapCell(suelobosquemarron[2],false);
-                    mapbosquecamino.mapita[4][8] = new MapCell(suelobosquemarron[2],false);
-                    mapbosquecamino.mapita[4][9] = new MapCell(suelobosquemarron[1],false);
-                    mapbosquecamino.mapita[5][10] = new MapCell(suelobosquemarron[2],false);
-                    mapbosquecamino.mapita[5][9] = new MapCell(suelobosquemarron[1],false);
-                    mapbosquecamino.mapita[6][10] = new MapCell(suelobosquemarron[2],false);
-                    mapbosquecamino.mapita[6][9] = new MapCell(suelobosquemarron[1],false);
-                    mapbosquecamino.mapita[7][10] = new MapCell(suelobosquemarron[2],false);
-                    mapbosquecamino.mapita[7][9] = new MapCell(suelobosquemarron[2],false);
-                    mapbosquecamino.mapita[8][9] = new MapCell(suelobosquemarron[1],false);
-                    mapbosquecamino.mapita[8][10] = new MapCell(suelobosquemarron[0],false);
-                    mapbosquecamino.mapita[9][10] = new MapCell(suelobosquemarron[0],false);
-                    mapbosquecamino.mapita[10][10] = new MapCell(suelobosquemarron[0],false);
-                    mapbosquecamino.mapita[11][10] = new MapCell(suelobosquemarron[0],false);
-                    mapbosquecamino.mapita[12][9] = new MapCell(suelobosquemarron[0],false);
-                    mapbosquecamino.mapita[12][10] = new MapCell(suelobosquemarron[0],false);
-                    mapbosquecamino.mapita[13][10] = new MapCell(suelobosquemarron[2],false);
-                    mapbosquecamino.mapita[13][11] = new MapCell(suelobosquemarron[2],false);
-                    mapbosquecamino.mapita[14][10] = new MapCell(suelobosquemarron[0],false);
-                    mapbosquecamino.mapita[14][11] = new MapCell(suelobosquemarron[1],false);
+                    mapbosquecamino.matrix[0][7] = new MapCell(suelobosquemarron[1],false);
+                    mapbosquecamino.matrix[0][8] = new MapCell(suelobosquemarron[0],false);
+                    mapbosquecamino.matrix[1][7] = new MapCell(suelobosquemarron[0],false);
+                    mapbosquecamino.matrix[1][8] = new MapCell(suelobosquemarron[0],false);
+                    mapbosquecamino.matrix[2][7] = new MapCell(suelobosquemarron[1],false);
+                    mapbosquecamino.matrix[2][8] = new MapCell(suelobosquemarron[1],false);
+                    mapbosquecamino.matrix[3][7] = new MapCell(suelobosquemarron[2],false);
+                    mapbosquecamino.matrix[3][8] = new MapCell(suelobosquemarron[2],false);
+                    mapbosquecamino.matrix[4][8] = new MapCell(suelobosquemarron[2],false);
+                    mapbosquecamino.matrix[4][9] = new MapCell(suelobosquemarron[1],false);
+                    mapbosquecamino.matrix[5][10] = new MapCell(suelobosquemarron[2],false);
+                    mapbosquecamino.matrix[5][9] = new MapCell(suelobosquemarron[1],false);
+                    mapbosquecamino.matrix[6][10] = new MapCell(suelobosquemarron[2],false);
+                    mapbosquecamino.matrix[6][9] = new MapCell(suelobosquemarron[1],false);
+                    mapbosquecamino.matrix[7][10] = new MapCell(suelobosquemarron[2],false);
+                    mapbosquecamino.matrix[7][9] = new MapCell(suelobosquemarron[2],false);
+                    mapbosquecamino.matrix[8][9] = new MapCell(suelobosquemarron[1],false);
+                    mapbosquecamino.matrix[8][10] = new MapCell(suelobosquemarron[0],false);
+                    mapbosquecamino.matrix[9][10] = new MapCell(suelobosquemarron[0],false);
+                    mapbosquecamino.matrix[10][10] = new MapCell(suelobosquemarron[0],false);
+                    mapbosquecamino.matrix[11][10] = new MapCell(suelobosquemarron[0],false);
+                    mapbosquecamino.matrix[12][9] = new MapCell(suelobosquemarron[0],false);
+                    mapbosquecamino.matrix[12][10] = new MapCell(suelobosquemarron[0],false);
+                    mapbosquecamino.matrix[13][10] = new MapCell(suelobosquemarron[2],false);
+                    mapbosquecamino.matrix[13][11] = new MapCell(suelobosquemarron[2],false);
+                    mapbosquecamino.matrix[14][10] = new MapCell(suelobosquemarron[0],false);
+                    mapbosquecamino.matrix[14][11] = new MapCell(suelobosquemarron[1],false);
 
 
                     control=0;
                     for (int i=0;i<numCeldas[0];i++){
                         for(int j=0;j<numCeldas[1];j++){
                             if (i%2==0)
-                                map2.mapita[j][i] = new MapCell(suelotenebrosa1[control],false);
+                                map2.matrix[j][i] = new MapCell(suelotenebrosa1[control],false);
                             else
-                                map2.mapita[j][i] = new MapCell(suelotenebrosa2[control],false);
+                                map2.matrix[j][i] = new MapCell(suelotenebrosa2[control],false);
                             if (control==2) control=0;
                             else control++;
                         }
@@ -1007,20 +1002,20 @@ public class JuegoRol extends JFrame{
                     mundito[2]=map2;
                     mundito[5]=map2;
                     mundito[8]=map2;
-                    mundito[miJugador.pos[0]].DrawMap(jContentPane.getGraphics(), 180, 20);
-                    miJugador.DrawPlayer(jContentPane.getGraphics());
+                    mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
+                    myPlayer.drawPlayer(jContentPane.getGraphics());
                     //·························fin probar mapa···························
                     String charX="0";
                     String charY="0";
                     String charMapa="0";
                     String charimg="0";
 
-                    if(miJugador.pos[0]>9)charMapa="";
-                    if(miJugador.pos[1]>9)charX="";
-                    if(miJugador.pos[2]>9)charY="";
-                    if(miJugador.imagen>9)charimg="";
+                    if(myPlayer.pos[0]>9)charMapa="";
+                    if(myPlayer.pos[1]>9)charX="";
+                    if(myPlayer.pos[2]>9)charY="";
+                    if(myPlayer.getSprite()>9)charimg="";
                     //mandar mis datos a los demas jugadores porque me conecte
-                    conexionTopic.sendMessage("conectar-"+ miJugador.getName()+"*"+charMapa+ miJugador.pos[0]+charX+ miJugador.pos[1]+charY+ miJugador.pos[2]+charimg+ miJugador.imagen);
+                    conexionTopic.sendMessage("conectar-"+ myPlayer.getName()+"*"+charMapa+ myPlayer.pos[0]+charX+ myPlayer.pos[1]+charY+ myPlayer.pos[2]+charimg+ myPlayer.getSprite());
                     Vida.setVisible(true);
                     Exp.setVisible(true);
                     Nivel.setVisible(true);
@@ -1069,14 +1064,14 @@ public class JuegoRol extends JFrame{
             ButUP.setBounds(new Rectangle(45, 215, 17, 17));
             ButUP.setVisible(false);
             ButUP.addMouseListener(new java.awt.event.MouseAdapter() {
-                public void mouseClicked(java.awt.event.MouseEvent e) {
+                public void mouseClicked(MouseEvent e) {
                     //boton para ir para arriba
-                    if(miJugador.fighting){//moverse sobre las opciones del combate
+                    if(myPlayer.isFighting){//moverse sobre las opciones del combate
                         switch(cursor){
                             case 0:
                                 guion1.setVisible(false);
 
-                                if(miJugador.fighting_Profesor){//si esta en las preguntas solo hay tres opciones
+                                if(myPlayer.isFightingVersusProfessor){//si esta en las preguntas solo hay tres opciones
                                     guion3.setVisible(true);
                                     cursor = 2;
                                 }
@@ -1113,12 +1108,12 @@ public class JuegoRol extends JFrame{
                         String charY="0";
                         String charMapa="0";
 
-                        if(miJugador.pos[0]>9)charMapa="";
-                        if(miJugador.pos[1]>9)charX="";
-                        if(miJugador.pos[2]>9)charY="";
+                        if(myPlayer.pos[0]>9)charMapa="";
+                        if(myPlayer.pos[1]>9)charX="";
+                        if(myPlayer.pos[2]>9)charY="";
                         //mandamos nuestra nueva posicion
-                        conexionTopic.sendMessage("pos-"+ miJugador.name+"*"+charMapa+ miJugador.pos[0]+charX+ miJugador.pos[1]+charY+ miJugador.pos[2]);
-                        DibujarDemasJugadores();
+                        conexionTopic.sendMessage("pos-"+ myPlayer.getName()+"*"+charMapa+ myPlayer.pos[0]+charX+ myPlayer.pos[1]+charY+ myPlayer.pos[2]);
+                        DibujarDemasgame.gamePlayers();
                         //Comprobamos si hay encuentro
                         encuentro();
                     }
@@ -1140,20 +1135,20 @@ public class JuegoRol extends JFrame{
             ButRight.setSize(new Dimension(17, 17));
             ButRight.setVisible(false);
             ButRight.addMouseListener(new java.awt.event.MouseAdapter() {
-                public void mouseClicked(java.awt.event.MouseEvent e) {
+                public void mouseClicked(MouseEvent e) {
                     //conexionTopic.StartConnection();
-                    if(!miJugador.fighting){//si no estoy en lucha
+                    if(!myPlayer.isFighting){//si no estoy en lucha
                         PlayerRight(); //nos movemos hacia la derecha
                         String charX="0";
                         String charY="0";
                         String charMapa="0";
 
-                        if(miJugador.pos[0]>9)charMapa="";
-                        if(miJugador.pos[1]>9)charX="";
-                        if(miJugador.pos[2]>9)charY="";
+                        if(myPlayer.pos[0]>9)charMapa="";
+                        if(myPlayer.pos[1]>9)charX="";
+                        if(myPlayer.pos[2]>9)charY="";
                         //envio las nuevas posiciones
-                        conexionTopic.sendMessage("pos-"+ miJugador.getName()+"*"+charMapa+ miJugador.pos[0]+charX+ miJugador.pos[1]+charY+ miJugador.pos[2]);
-                        DibujarDemasJugadores();
+                        conexionTopic.sendMessage("pos-"+ myPlayer.getName()+"*"+charMapa+ myPlayer.pos[0]+charX+ myPlayer.pos[1]+charY+ myPlayer.pos[2]);
+                        DibujarDemasgame.gamePlayers();
                         //comprobamos que no haya encuentro
                         encuentro();
                     }
@@ -1175,9 +1170,9 @@ public class JuegoRol extends JFrame{
             ButDown.setSize(new Dimension(17, 17));
             ButDown.setVisible(false);
             ButDown.addMouseListener(new java.awt.event.MouseAdapter() {
-                public void mouseClicked(java.awt.event.MouseEvent e) {
+                public void mouseClicked(MouseEvent e) {
                     //Es lo mismo que en el boton ButUP pero en sentido contrario el movimiento
-                    if(miJugador.fighting){
+                    if(myPlayer.isFighting){
                         switch(cursor){
                             case 0:
                                 guion1.setVisible(false);
@@ -1191,7 +1186,7 @@ public class JuegoRol extends JFrame{
                                 break;
                             case 2:
                                 guion3.setVisible(false);
-                                if(miJugador.fighting_Profesor){
+                                if(myPlayer.isFightingVersusProfessor){
                                     guion1.setVisible(true);
                                     cursor=0;
                                 }
@@ -1218,11 +1213,11 @@ public class JuegoRol extends JFrame{
                         String charY="0";
                         String charMapa="0";
 
-                        if(miJugador.pos[0]>9)charMapa="";
-                        if(miJugador.pos[1]>9)charX="";
-                        if(miJugador.pos[2]>9)charY="";
-                        conexionTopic.sendMessage("pos-"+ miJugador.getName()+"*"+charMapa+ miJugador.pos[0]+charX+ miJugador.pos[1]+charY+ miJugador.pos[2]);
-                        DibujarDemasJugadores();
+                        if(myPlayer.pos[0]>9)charMapa="";
+                        if(myPlayer.pos[1]>9)charX="";
+                        if(myPlayer.pos[2]>9)charY="";
+                        conexionTopic.sendMessage("pos-"+ myPlayer.getName()+"*"+charMapa+ myPlayer.pos[0]+charX+ myPlayer.pos[1]+charY+ myPlayer.pos[2]);
+                        DibujarDemasgame.gamePlayers();
                         encuentro();
                     }
                 }
@@ -1245,17 +1240,17 @@ public class JuegoRol extends JFrame{
             ButLeft.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseClicked(java.awt.event.MouseEvent e) {
                     //Esto es lo mismo que el boton ButRight pero en sentido contrario
-                    if(!miJugador.fighting){
+                    if(!myPlayer.isFighting){
                         PlayerLeft();
                         String charX="0";
                         String charY="0";
                         String charMapa="0";
 
-                        if(miJugador.pos[0]>9)charMapa="";
-                        if(miJugador.pos[1]>9)charX="";
-                        if(miJugador.pos[2]>9)charY="";
-                        conexionTopic.sendMessage("pos-"+ miJugador.getName()+"*"+charMapa+ miJugador.pos[0]+charX+ miJugador.pos[1]+charY+ miJugador.pos[2]);
-                        DibujarDemasJugadores();
+                        if(myPlayer.pos[0]>9)charMapa="";
+                        if(myPlayer.pos[1]>9)charX="";
+                        if(myPlayer.pos[2]>9)charY="";
+                        conexionTopic.sendMessage("pos-"+ myPlayer.getName()+"*"+charMapa+ myPlayer.pos[0]+charX+ myPlayer.pos[1]+charY+ myPlayer.pos[2]);
+                        DibujarDemasgame.gamePlayers();
                         encuentro();
                     }
                 }
@@ -1308,7 +1303,7 @@ public class JuegoRol extends JFrame{
             Enviar.setText("Enviar");
             Enviar.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseClicked(java.awt.event.MouseEvent e) {
-                    conexionTopic.sendMessage("chat-"+ miJugador.getName()+"*"+ConsolaComandos.getText());
+                    conexionTopic.sendMessage("chat-"+ myPlayer.getName()+"*"+ConsolaComandos.getText());
                 }
             });
         }
@@ -1356,7 +1351,7 @@ public class JuegoRol extends JFrame{
             jButton32.setText("Conectar");
             jButton32.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseClicked(java.awt.event.MouseEvent e) {
-                    conexionTopic = new ConnectionProcess();
+                    conexionTopic = new ConnectionManager();
                     conexionTopic.startConnection();//iniciamos la coneccion
                     jButton32.setVisible(false);
                     nombre.setVisible(false);
@@ -1526,7 +1521,7 @@ public class JuegoRol extends JFrame{
             Crear.setVisible(false);
             Crear.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseClicked(java.awt.event.MouseEvent e) {
-                    conexionTopic = new ConnectionProcess();
+                    conexionTopic = new ConnectionManager();
                     conexionTopic.startConnection();
 
                     System.out.println("newbd-"+nombrereg.getText()+"*"+sexoreg.getSelectedIndex()+bandoreg.getSelectedIndex()+casareg.getSelectedIndex()+imagenreg.getSelectedIndex());
@@ -1571,15 +1566,15 @@ public class JuegoRol extends JFrame{
      */
     //procedimiento cuando se pierde contra una criatura actua igual que con perder_combate
     void perdercombate_Criatura(){
-        if (miJugador.getFaction()==0){
-            miJugador.pos[0]=3;
+        if (myPlayer.getFaction()==0){
+            myPlayer.pos[0]=3;
         }
         else{
-            miJugador.pos[0]=5;
+            myPlayer.pos[0]=5;
         }
-        miJugador.pos[1]=7;
-        miJugador.pos[2]=7;
-        miJugador.health=100;
+        myPlayer.pos[1]=7;
+        myPlayer.pos[2]=7;
+        myPlayer.health=100;
 
         guion1.setVisible(false);
         guion2.setVisible(false);
@@ -1595,26 +1590,26 @@ public class JuegoRol extends JFrame{
         vida_rival.setVisible(false);
         accioncombate.setVisible(false);
 
-        mundito[miJugador.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
-        DibujarDemasJugadores();
-        miJugador.DrawPlayer(jContentPane.getGraphics());
-        conexionTopic.sendMessage("pos-"+ miJugador.getName()+"*"+"0"+ miJugador.pos[0]+"0"+ miJugador.pos[1]+"0"+ miJugador.pos[2]);
-        //conexionTopic.SendMessage("accion-"+miJugador.rival+"*"+6);
-        Vida.setText("Vida: "+ miJugador.health);
+        mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
+        DibujarDemasgame.gamePlayers();
+        myPlayer.drawPlayer(jContentPane.getGraphics());
+        conexionTopic.sendMessage("pos-"+ myPlayer.getName()+"*"+"0"+ myPlayer.pos[0]+"0"+ myPlayer.pos[1]+"0"+ myPlayer.pos[2]);
+        //conexionTopic.SendMessage("accion-"+myPlayer.enemy+"*"+6);
+        Vida.setText("Vida: "+ myPlayer.health);
 
-        criaturas[miJugador.rivalID].fighting= false;
-        miJugador.fighting= false;
-        miJugador.fighting_Criatura= false;
+        criaturas[myPlayer.enemyId].isFighting = false;
+        myPlayer.isFighting = false;
+        myPlayer.isFightingVersusCriature = false;
 
 
     }
 
     //	procedimiento cuando se gana contra una criatura actua igual que con ganar_combate
     void ganarcombate_Criatura(){
-        miJugador.experience+=5*criaturas[miJugador.rivalID].level;
-        if (miJugador.experience>50* miJugador.level* miJugador.level){
-            miJugador.level++;
-            miJugador.experience=0;
+        myPlayer.experience+=5*criaturas[myPlayer.enemyId].level;
+        if (myPlayer.experience>50* myPlayer.level* myPlayer.level){
+            myPlayer.level++;
+            myPlayer.experience=0;
         }
 
         guion1.setVisible(false);
@@ -1631,15 +1626,15 @@ public class JuegoRol extends JFrame{
         vida_rival.setVisible(false);
         accioncombate.setVisible(false);
 
-        mundito[miJugador.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
-        DibujarDemasJugadores();
-        miJugador.DrawPlayer(jContentPane.getGraphics());
-        Exp.setText("Exp: "+ miJugador.experience);
-        Nivel.setText("Nivel: "+ miJugador.level);
-        criaturas[miJugador.rivalID].health = 50;
-        criaturas[miJugador.rivalID].fighting= false;
-        miJugador.fighting= false;
-        miJugador.fighting_Criatura= false;
+        mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
+        DibujarDemasgame.gamePlayers();
+        myPlayer.drawPlayer(jContentPane.getGraphics());
+        Exp.setText("Exp: "+ myPlayer.experience);
+        Nivel.setText("Nivel: "+ myPlayer.level);
+        criaturas[myPlayer.enemyId].health = 50;
+        criaturas[myPlayer.enemyId].isFighting = false;
+        myPlayer.isFighting = false;
+        myPlayer.isFightingVersusCriature = false;
 
     }
 
@@ -1651,20 +1646,23 @@ public class JuegoRol extends JFrame{
 
         int azar = randomGenerator.nextInt(2);
 
-        if(miJugador.rivalID < 8){
+        if(myPlayer.enemyId < 8){
             if (azar == 0){
-                miJugador.objetos[1]++;
+                myPlayer.setPotions(myPlayer.getPotions()+1);
+                //myPlayer.objetos[1]++;
                 Consola.setText(Consola.getText()+" Ganas una pocion");
             }
             else{
-                miJugador.objetos[2]++;
-                Consola.setText(Consola.getText()+"Ganas un veneno");
+                myPlayer.setPoison(myPlayer.getPoison()+1);
+                //myPlayer.objetos[2]++;
+                Consola.setText(Consola.getText()+" Ganas un veneno");
             }
         }
         else{
 
-            if (miJugador.level>10){
-                miJugador.objetos[3]++;
+            if (myPlayer.level>10){
+                myPlayer.setUnforgivableCurses(myPlayer.getUnforgivableCurses()+1);
+                //myPlayer.objetos[3]++;
                 Consola.setText(Consola.getText()+" Ganas maldición");
             }
             else{
@@ -1681,13 +1679,13 @@ public class JuegoRol extends JFrame{
         guion3.setVisible(false);
         pregunta.setVisible(false);
 
-        profesores[miJugador.rivalID].fighting= false;
-        miJugador.fighting= false;
-        miJugador.fighting_Profesor= false;
+        profesores[myPlayer.enemyId].isFighting = false;
+        myPlayer.isFighting = false;
+        myPlayer.isFightingVersusProfessor = false;
 
-        mundito[miJugador.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
-        DibujarDemasJugadores();
-        miJugador.DrawPlayer(jContentPane.getGraphics());
+        mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
+        DibujarDemasgame.gamePlayers();
+        myPlayer.drawPlayer(jContentPane.getGraphics());
 
     }
     //	procedimiento si fallas la pregunta
@@ -1703,13 +1701,13 @@ public class JuegoRol extends JFrame{
         guion3.setVisible(false);
         pregunta.setVisible(false);
 
-        mundito[miJugador.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
-        DibujarDemasJugadores();
-        miJugador.DrawPlayer(jContentPane.getGraphics());
+        mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
+        DibujarDemasgame.gamePlayers();
+        myPlayer.drawPlayer(jContentPane.getGraphics());
 
-        profesores[miJugador.rivalID].fighting= false;
-        miJugador.fighting= false;
-        miJugador.fighting_Profesor= false;
+        profesores[myPlayer.enemyId].isFighting = false;
+        myPlayer.isFighting = false;
+        myPlayer.isFightingVersusProfessor = false;
 
     }
     //boton que selecciona la accion que se ejecuta
@@ -1721,19 +1719,20 @@ public class JuegoRol extends JFrame{
             accioncombate.setVisible(false);
             accioncombate.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseClicked(java.awt.event.MouseEvent e) {
-                    if(miJugador.fighting_Criatura){//si se lucha contra una criatura
+                    if(myPlayer.isFightingVersusCriature){//si se lucha contra una criatura
                         switch (cursor)
                         {
                             case 0://se ataca a la criatura y se le resta vida
-                                criaturas[miJugador.rivalID].health-= miJugador.level+5;
-                                vida_rival.setText("Vida: "+criaturas[miJugador.rivalID].health);
+                                criaturas[myPlayer.enemyId].health-= myPlayer.level+5;
+                                vida_rival.setText("Vida: "+criaturas[myPlayer.enemyId].health);
                                 break;
 
                             case 1://Tomas pocion y aumenta tu vida
-                                if(miJugador.objetos[1] > 0){
-                                    miJugador.health+=10;
-                                    Vida.setText("Vida: "+ miJugador.health);
-                                    miJugador.objetos[1]--;
+                                if(myPlayer.getPotions() > 0){
+                                    myPlayer.health+=10;
+                                    Vida.setText("Vida: "+ myPlayer.health);
+                                    //myPlayer.objetos[1]--;
+                                    myPlayer.setPotions(myPlayer.getPotions()-1);
                                 }
                                 else{
                                     Consola.setText("No te quedan pociones");
@@ -1741,19 +1740,21 @@ public class JuegoRol extends JFrame{
                                 break;
 
                             case 2://Veneno
-                                if(miJugador.objetos[2] > 0){
-                                    criaturas[miJugador.rivalID].health-= 20;
-                                    vida_rival.setText("Vida: "+criaturas[miJugador.rivalID].health);
-                                    miJugador.objetos[2]--;
+                                if(myPlayer.getPoison() > 0){
+                                    criaturas[myPlayer.enemyId].health-= 20;
+                                    vida_rival.setText("Vida: "+criaturas[myPlayer.enemyId].health);
+                                    //myPlayer.objetos[2]--;
+                                    myPlayer.setPoison(myPlayer.getPoison()-1);
                                 }
                                 else{
                                     Consola.setText("No te queda veneno");
                                 }
                                 break;
                             case 3://Maldicion imperdonable
-                                if(miJugador.objetos[3] > 0){
-                                    criaturas[miJugador.rivalID].health=0;
-                                    miJugador.objetos[3]--;
+                                if(myPlayer.getUnforgivableCurses() > 0){
+                                    criaturas[myPlayer.enemyId].health=0;
+                                    //myPlayer.objetos[3]--;
+                                    myPlayer.setUnforgivableCurses(myPlayer.getUnforgivableCurses()-1);
                                 }
                                 else{
                                     Consola.setText("No tienes poder para lanzar la maldición");
@@ -1761,9 +1762,9 @@ public class JuegoRol extends JFrame{
                                 break;
                             case 4:
                                 //si eliges hiur sales del combate y vuelves al escenario
-                                miJugador.fighting=false;
-                                miJugador.fighting_Criatura=false;
-                                criaturas[miJugador.rivalID].fighting=false;
+                                myPlayer.isFighting =false;
+                                myPlayer.isFightingVersusCriature =false;
+                                criaturas[myPlayer.enemyId].isFighting =false;
                                 guion1.setVisible(false);
                                 guion2.setVisible(false);
                                 guion3.setVisible(false);
@@ -1778,17 +1779,17 @@ public class JuegoRol extends JFrame{
                                 vida_rival.setVisible(false);
                                 accioncombate.setVisible(false);
 
-                                mundito[miJugador.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
-                                DibujarDemasJugadores();
-                                miJugador.DrawPlayer(jContentPane.getGraphics());
+                                mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
+                                DibujarDemasgame.gamePlayers();
+                                myPlayer.drawPlayer(jContentPane.getGraphics());
                                 break;
                         }
                         //ataque de la criatura
                         System.out.println("Acción enviada: "+cursor);
-                        if (criaturas[miJugador.rivalID].health > 0){
+                        if (criaturas[myPlayer.enemyId].health > 0){
                             Consola.setText("Te han atacado");
-                            miJugador.health-=(criaturas[miJugador.rivalID].level+5);
-                            Vida.setText("Salud: "+ miJugador.health);
+                            myPlayer.health-=(criaturas[myPlayer.enemyId].level+5);
+                            Vida.setText("Salud: "+ myPlayer.health);
 
                         }
                         //sino le queda vida ganas
@@ -1797,19 +1798,19 @@ public class JuegoRol extends JFrame{
 
                         }
                         //si no te queda a ti pierdes
-                        if(miJugador.health <=0){
+                        if(myPlayer.health <=0){
                             perdercombate_Criatura();
 
                         }
 
                     }
                     else{
-                        if(miJugador.fighting_Profesor){ //opciones cuando responde a la pregunta
+                        if(myPlayer.isFightingVersusProfessor){ //opciones cuando responde a la pregunta
                             switch (cursor)
                             {
                                 //segun la solucion y la elelccion vemos si acierta o falla
                                 case 0:
-                                    if (soluciones[miJugador.pregunta]==1){
+                                    if (soluciones[myPlayer.pregunta]==1){
                                         acertar();
 
                                     }
@@ -1821,7 +1822,7 @@ public class JuegoRol extends JFrame{
                                     break;
 
                                 case 1:
-                                    if (soluciones[miJugador.pregunta]==2){
+                                    if (soluciones[myPlayer.pregunta]==2){
                                         acertar();
 
                                     }
@@ -1832,7 +1833,7 @@ public class JuegoRol extends JFrame{
                                     break;
 
                                 case 2:
-                                    if (soluciones[miJugador.pregunta]==3){
+                                    if (soluciones[myPlayer.pregunta]==3){
                                         acertar();
 
                                     }
@@ -1844,20 +1845,21 @@ public class JuegoRol extends JFrame{
                             }
                         }
                         else{//combate contra otro usuario
-                            if((cursor != 3)||(cursor==3 && miJugador.level>10)){//si no tienes el nivel para ejecutar maldicion no entras
-                                conexionTopic.sendMessage("accion-"+ miJugador.rival+"*"+cursor);//envias la accion
+                            if((cursor != 3)||(cursor==3 && myPlayer.level>10)){//si no tienes el nivel para ejecutar maldicion no entras
+                                conexionTopic.sendMessage("accion-"+ myPlayer.enemy +"*"+cursor);//envias la accion
                                 switch (cursor)
                                 {
                                     case 0://si es cero restas la vida del contrario
-                                        jugadores[miJugador.rivalID].health-= miJugador.level+5;
-                                        vida_rival.setText("Vida: "+jugadores[miJugador.rivalID].health);
+                                        game.gamePlayers[myPlayer.enemyId].health-= myPlayer.level+5;
+                                        vida_rival.setText("Vida: "+game.gamePlayers[myPlayer.enemyId].health);
                                         break;
 
                                     case 1://si es uno bebes pocion siempre que tengas
-                                        if(miJugador.objetos[1] > 0){
-                                            miJugador.health+=10;
-                                            Vida.setText("Vida: "+ miJugador.health);
-                                            miJugador.objetos[1]--;
+                                        if(myPlayer.getPotions() > 0){
+                                            myPlayer.health+=10;
+                                            Vida.setText("Vida: "+ myPlayer.health);
+                                            //myPlayer.objetos[1]--;
+                                            myPlayer.setPotions(myPlayer.getPotions()-1);
                                         }
                                         else{
                                             Consola.setText("No te quedan pociones");
@@ -1865,19 +1867,21 @@ public class JuegoRol extends JFrame{
                                         break;
 
                                     case 2:////si es dos lanzas veneno siempre que tengas
-                                        if(miJugador.objetos[2] > 0){
-                                            jugadores[miJugador.rivalID].health-= 20;
-                                            vida_rival.setText("Vida: "+jugadores[miJugador.rivalID].health);
-                                            miJugador.objetos[2]--;
+                                        if(myPlayer.getPoison() > 0){
+                                            game.gamePlayers[myPlayer.enemyId].health-= 20;
+                                            vida_rival.setText("Vida: "+game.gamePlayers[myPlayer.enemyId].health);
+                                            //myPlayer.objetos[2]--;
+                                            myPlayer.setPoison(myPlayer.getPoison()-1);
                                         }
                                         else{
                                             Consola.setText("No te queda veneno");
                                         }
                                         break;
                                     case 3://lanzastes Maldicion imperdonable si puedes
-                                        if(miJugador.objetos[3] > 0){
-                                            jugadores[miJugador.rivalID].health=0;
-                                            miJugador.objetos[3]--;
+                                        if(myPlayer.getUnforgivableCurses() > 0){
+                                            game.gamePlayers[myPlayer.enemyId].health=0;
+                                            //myPlayer.objetos[3]--;
+                                            myPlayer.setUnforgivableCurses(myPlayer.getUnforgivableCurses()-1);
                                         }
                                         else{
                                             Consola.setText("No tienes poder para lanzar la maldición");
@@ -1899,10 +1903,10 @@ public class JuegoRol extends JFrame{
                                         vida_rival.setVisible(false);
                                         accioncombate.setVisible(false);
 
-                                        mundito[miJugador.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
-                                        DibujarDemasJugadores();
-                                        miJugador.DrawPlayer(jContentPane.getGraphics());
-                                        miJugador.fighting=false;
+                                        mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
+                                        DibujarDemasgame.gamePlayers();
+                                        myPlayer.drawPlayer(jContentPane.getGraphics());
+                                        myPlayer.isFighting =false;
 
 
                                         break;
@@ -1939,15 +1943,15 @@ public class JuegoRol extends JFrame{
                     String charvida3="0";
                     String charnivel="0";
 
-                    if(miJugador.pos[0] > 9) charMapa = "";
-                    if(miJugador.pos[1] > 9) charX = "";
-                    if(miJugador.pos[2] > 9) charY = "";
-                    if(miJugador.health > 9) charvida1 = "";
-                    if(miJugador.health > 99) charvida2 = "";
-                    if(miJugador.health > 999) charvida3 = "";
-                    if(miJugador.level > 9) charnivel = "";
+                    if(myPlayer.pos[0] > 9) charMapa = "";
+                    if(myPlayer.pos[1] > 9) charX = "";
+                    if(myPlayer.pos[2] > 9) charY = "";
+                    if(myPlayer.health > 9) charvida1 = "";
+                    if(myPlayer.health > 99) charvida2 = "";
+                    if(myPlayer.health > 999) charvida3 = "";
+                    if(myPlayer.level > 9) charnivel = "";
                     //enviamos los datos a la base de datos
-                    conexionTopic.sendMessage("desconectar-"+ miJugador.getName()+"*"+charMapa+ miJugador.pos[0]+charX+ miJugador.pos[1]+charY+ miJugador.pos[2]+ miJugador.getFaction()+charvida3+charvida2+charvida1+ miJugador.health+charnivel+ miJugador.level+ miJugador.objetos[0]+ miJugador.objetos[1]+ miJugador.objetos[2]+ miJugador.objetos[3]+ miJugador.experience);
+                    conexionTopic.sendMessage("desconectar-"+ myPlayer.getName()+"*"+charMapa+ myPlayer.pos[0]+charX+ myPlayer.pos[1]+charY+ myPlayer.pos[2]+ myPlayer.getFaction()+charvida3+charvida2+charvida1+ myPlayer.health+charnivel+ myPlayer.level+ myPlayer.getWand()+ myPlayer.getPotions()+ myPlayer.getPoison()+ myPlayer.getUnforgivableCurses()+ myPlayer.experience);
                 }
             });
         }

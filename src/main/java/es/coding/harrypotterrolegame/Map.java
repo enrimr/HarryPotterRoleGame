@@ -7,7 +7,7 @@ import java.awt.*;
  */
 public class Map {
 
-    public MapCell [][] mapita;  //atributo matriz del mapa
+    public MapCell [][] matrix;  //atributo matriz del mapa
     private int cellWidth; //numero de celdas en x del mapa
     private int cellHeight; //numero de celdas en x del mapa
     private int pixelWidth; //numero de celdas en x del mapa
@@ -19,7 +19,7 @@ public class Map {
         this.pixelHeight = Integer.valueOf(Configuration.getInstance().getConfig("map.size.width"));
         this.cellWidth=Integer.valueOf(Configuration.getInstance().getConfig("map.cell.width"));
         this.cellHeight=Integer.valueOf(Configuration.getInstance().getConfig("map.cell.height"));
-        this.mapita = initMapCells();
+        this.matrix = initMapCells();
     }
 
     //constructor que inicializa el atributo con un tamaño proporcionado
@@ -28,7 +28,7 @@ public class Map {
         this.pixelHeight = pixelHeight;
         this.cellWidth = cellWidth;
         this.cellHeight = cellHeight;
-        this.mapita = initMapCells();
+        this.matrix = initMapCells();
     }
 
     //Inicializa los mapas con una unica imagen
@@ -47,7 +47,7 @@ public class Map {
         // Pintamos el Rectangulo que delimita la superficie
         for (int i=0;i<this.cellWidth;i++){
             for (int j=0;j<this.cellHeight;j++){
-                mapita[i][j].drawCell(g, x+i*this.pixelWidth/this.cellWidth, y+j*this.pixelHeight/this.cellHeight);
+                this.matrix[i][j].drawCell(g, x+i*this.pixelWidth/this.cellWidth, y+j*this.pixelHeight/this.cellHeight);
             }
         }
         g.drawRect(x, y, this.pixelWidth, this.pixelHeight);

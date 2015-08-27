@@ -8,9 +8,9 @@ import java.util.Hashtable;
 /**
  * Created by Enri on 25/8/15.
  */
-public class ConnectionProcess {
+public class ConnectionManager {
 
-    Configuration config = new Configuration();
+    Configuration config = Configuration.getInstance();
 
     public void startConnection(){
         try{

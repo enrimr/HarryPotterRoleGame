@@ -71,7 +71,7 @@ class Combat extends Thread {
         MiJugador.DrawPlayer(jContentPane.getGraphics());
         //mando la posicion para que los demas la actualizen
         conexionTopic.SendMessage("pos-"+MiJugador.name+"*"+"0"+MiJugador.pos[0]+"0"+MiJugador.pos[1]+"0"+MiJugador.pos[2]);
-        //mando a mi rival que he perdido el combate
+        //mando a mi enemy que he perdido el combate
         conexionTopic.SendMessage("accion-"+MiJugador.rival+"*"+6);
         Vida.setText("Vida: "+MiJugador.health);
 

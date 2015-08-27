@@ -15,13 +15,37 @@ import java.util.Properties;
  */
 public class Configuration {
 
-    // Paso de mensajes
-    Hashtable properties;
-    Context context;
-    ConnectionFactory factory;
-    javax.jms.Connection connection;
-    Session session;
-    Destination destination;
+     // Paso de mensajes
+     Hashtable properties;
+     Context context;
+     ConnectionFactory factory;
+     javax.jms.Connection connection;
+     Session session;
+     Destination destination;
+
+     //matriz de imagenes de todos los personajes que hay en el juego
+     String [] playerSprites= {"./imagenes/jugadores/gryffindor_tio.gif",
+            "./imagenes/jugadores/gryffindor_tia.gif",
+            "./imagenes/jugadores/slytherin_tio.gif",
+            "./imagenes/jugadores/slytherin_tia.gif",
+            "./imagenes/jugadores/hufflepuff_tio.gif",
+            "./imagenes/jugadores/hufflepuff_tia.gif",
+            "./imagenes/jugadores/ravenclaw_tio.gif",
+            "./imagenes/jugadores/ravenclaw_tia.gif",
+            "./imagenes/jugadores/harrypotter.gif",
+            "./imagenes/jugadores/snape.gif",
+            "./imagenes/jugadores/nagini.gif",//criatura
+            "./imagenes/jugadores/mcgonagall.gif", //Mc
+            "./imagenes/jugadores/Sprout.gif",
+            "./imagenes/jugadores/flit.gif",
+            "./imagenes/jugadores/lucius.gif",
+            "./imagenes/jugadores/bellatrix.gif",
+            "./imagenes/jugadores/colagusano.gif",
+            "./imagenes/jugadores/umbrig.gif",
+            "./imagenes/jugadores/dumbler.gif",
+            "./imagenes/jugadores/volde.gif",
+            "./imagenes/jugadores/lloron.gif",
+            "./imagenes/jugadores/trol.gif"};
 
     Properties config = new Properties();
 
@@ -31,7 +55,7 @@ public class Configuration {
         return ourInstance;
     }
 
-    public Configuration() {
+    private Configuration() {
 
         this.config = new Properties();
         InputStream input = null;
