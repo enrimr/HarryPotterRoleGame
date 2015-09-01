@@ -138,8 +138,12 @@ public class GameGUI extends JFrame{
                 vida_rival.setVisible(true);
                 exp_rival.setVisible(true);
 
-                jContentPane.getGraphics().clearRect(x, y, mapaTam[0], mapaTam[1]);
-                creatures[myPlayer.enemyId].DrawPlayer(jContentPane.getGraphics(), 2, 300, 50);
+                jContentPane.getGraphics().clearRect(Integer.parseInt(
+                        Configuration.getInstance().getConfig("x")),
+                        Integer.parseInt(Configuration.getInstance().getConfig("y")),
+                        mapaTam[0],
+                        mapaTam[1]);
+                creatures[myPlayer.enemyId].drawPlayer(jContentPane.getGraphics(), 2, 300, 50);
                 myPlayer.drawPlayer(jContentPane.getGraphics(), 1, 70, 70);
             }
         }
@@ -215,7 +219,11 @@ public class GameGUI extends JFrame{
     //procedimiento que prepara el escenario para un combate entre dos game.gamePlayers
     void combate(String rival){
         //pintamos el fondo del combate
-        jContentPane.getGraphics().clearRect(x, y, mapaTam[0], mapaTam[1]);
+        jContentPane.getGraphics().clearRect(
+                Integer.parseInt(Configuration.getInstance().getConfig("x")),
+                Integer.parseInt(Configuration.getInstance().getConfig("y")),
+                mapaTam[0],
+                mapaTam[1]);
         drawBackground("./imagenes/fondos/duelo.gif");
         //activamos los recursos del combate
         cursor=0;
@@ -248,7 +256,11 @@ public class GameGUI extends JFrame{
         huir.setVisible(true);
         Maldición_Imperdonable.setVisible(true);
 
-        jContentPane.getGraphics().clearRect(x, y, mapaTam[0], mapaTam[1]);
+        jContentPane.getGraphics().clearRect(
+                Integer.parseInt(Configuration.getInstance().getConfig("x")),
+                Integer.parseInt(Configuration.getInstance().getConfig("y")),
+                mapaTam[0],
+                mapaTam[1]);
         //pintamos a la criatura y al personaje
         creatures[rival].drawPlayer(jContentPane.getGraphics(), 2, 300, 50);
         myPlayer.drawPlayer(jContentPane.getGraphics(), 1, 70, 70);
@@ -287,7 +299,11 @@ public class GameGUI extends JFrame{
         accioncombate.setVisible(true);
 
 
-        jContentPane.getGraphics().clearRect(x, y, mapaTam[0], mapaTam[1]);
+        jContentPane.getGraphics().clearRect(
+                Integer.parseInt(Configuration.getInstance().getConfig("x")),
+                Integer.parseInt(Configuration.getInstance().getConfig("y")),
+                mapaTam[0],
+                mapaTam[1]);
 
         //profesores[enemy].drawPlayer(jContentPane.getGraphics(),2,300,50);
         //myPlayer.drawPlayer(jContentPane.getGraphics(),1,70,70);
@@ -489,7 +505,10 @@ public class GameGUI extends JFrame{
                 myPlayer.pos[2]=(numCeldas[1]-1);//eSTABA EN -1
                 Consola.setText("Estamos en el mapa:" + myPlayer.pos[0]);
                 jContentPane.getGraphics().clearRect(180,20,200,200);
-                mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), x, y);
+                mundito[myPlayer.pos[0]].drawMap(
+                        jContentPane.getGraphics(),
+                        Integer.parseInt(Configuration.getInstance().getConfig("x")),
+                        Integer.parseInt(Configuration.getInstance().getConfig("y")));
                 myPlayer.drawPlayer(jContentPane.getGraphics());
 
                 drawPlayerPos();
@@ -521,7 +540,10 @@ public class GameGUI extends JFrame{
                 myPlayer.pos[2]=1;
                 Consola.setText("Estamos en el mapa:" + myPlayer.pos[0]);
                 jContentPane.getGraphics().clearRect(180,20,200,200);
-                mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), x, y);
+                mundito[myPlayer.pos[0]].drawMap(
+                        jContentPane.getGraphics(),
+                        Integer.parseInt(Configuration.getInstance().getConfig("x")),
+                        Integer.parseInt(Configuration.getInstance().getConfig("y")));
                 myPlayer.drawPlayer(jContentPane.getGraphics());
                 drawPlayerPos();
             }
@@ -551,7 +573,10 @@ public class GameGUI extends JFrame{
                 myPlayer.pos[1]=0;
                 Consola.setText("Estamos en el mapa:" + myPlayer.pos[0]);
                 jContentPane.getGraphics().clearRect(180,20,200,200);
-                mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), x, y);
+                mundito[myPlayer.pos[0]].drawMap(
+                        jContentPane.getGraphics(),
+                        Integer.parseInt(Configuration.getInstance().getConfig("x")),
+                        Integer.parseInt(Configuration.getInstance().getConfig("y")));
                 myPlayer.drawPlayer(jContentPane.getGraphics());
                 drawPlayerPos();
             }
@@ -581,7 +606,10 @@ public class GameGUI extends JFrame{
                 myPlayer.pos[1]=(numCeldas[1]-1);
                 Consola.setText("Estamos en el mapa:" + myPlayer.pos[0]);
                 jContentPane.getGraphics().clearRect(180,20,200,200);
-                mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), x, y);
+                mundito[myPlayer.pos[0]].drawMap(
+                        jContentPane.getGraphics(),
+                        Integer.parseInt(Configuration.getInstance().getConfig("x")),
+                        Integer.parseInt(Configuration.getInstance().getConfig("y")));
                 myPlayer.drawPlayer(jContentPane.getGraphics());
                 drawPlayerPos();
             }
@@ -1577,13 +1605,13 @@ public class GameGUI extends JFrame{
         accioncombate.setVisible(false);
 
         mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
-        DibujarDemasgame.gamePlayers();
+        DibujarDemasJugadores();
         myPlayer.drawPlayer(jContentPane.getGraphics());
         conexionTopic.sendMessage("pos-"+ myPlayer.getName()+"*"+"0"+ myPlayer.pos[0]+"0"+ myPlayer.pos[1]+"0"+ myPlayer.pos[2]);
         //conexionTopic.SendMessage("accion-"+myPlayer.enemy+"*"+6);
         Vida.setText("Vida: "+ myPlayer.health);
 
-        criaturas[myPlayer.enemyId].isFighting = false;
+        creatures[myPlayer.enemyId].isFighting = false;
         myPlayer.isFighting = false;
         myPlayer.isFightingVersusCriature = false;
 
@@ -1592,7 +1620,7 @@ public class GameGUI extends JFrame{
 
     //	procedimiento cuando se gana contra una criatura actua igual que con ganar_combate
     void ganarcombate_Criatura(){
-        myPlayer.experience+=5*criaturas[myPlayer.enemyId].level;
+        myPlayer.experience+=5*creatures[myPlayer.enemyId].level;
         if (myPlayer.experience>50* myPlayer.level* myPlayer.level){
             myPlayer.level++;
             myPlayer.experience=0;
@@ -1617,8 +1645,8 @@ public class GameGUI extends JFrame{
         myPlayer.drawPlayer(jContentPane.getGraphics());
         Exp.setText("Exp: "+ myPlayer.experience);
         Nivel.setText("Nivel: "+ myPlayer.level);
-        criaturas[myPlayer.enemyId].health = 50;
-        criaturas[myPlayer.enemyId].isFighting = false;
+        creatures[myPlayer.enemyId].health = 50;
+        creatures[myPlayer.enemyId].isFighting = false;
         myPlayer.isFighting = false;
         myPlayer.isFightingVersusCriature = false;
 
@@ -1665,7 +1693,7 @@ public class GameGUI extends JFrame{
         guion3.setVisible(false);
         pregunta.setVisible(false);
 
-        profesores[myPlayer.enemyId].isFighting = false;
+        teachers[myPlayer.enemyId].isFighting = false;
         myPlayer.isFighting = false;
         myPlayer.isFightingVersusProfessor = false;
 
@@ -1691,7 +1719,7 @@ public class GameGUI extends JFrame{
         DibujarDemasJugadores();
         myPlayer.drawPlayer(jContentPane.getGraphics());
 
-        profesores[myPlayer.enemyId].isFighting = false;
+        teachers[myPlayer.enemyId].isFighting = false;
         myPlayer.isFighting = false;
         myPlayer.isFightingVersusProfessor = false;
 
@@ -1704,13 +1732,13 @@ public class GameGUI extends JFrame{
             accioncombate.setText("Enviar Acción");
             accioncombate.setVisible(false);
             accioncombate.addMouseListener(new java.awt.event.MouseAdapter() {
-                public void mouseClicked(java.awt.event.MouseEvent e) {
+                public void mouseClicked(MouseEvent e) {
                     if(myPlayer.isFightingVersusCriature){//si se lucha contra una criatura
                         switch (cursor)
                         {
                             case 0://se ataca a la criatura y se le resta vida
-                                criaturas[myPlayer.enemyId].health-= myPlayer.level+5;
-                                vida_rival.setText("Vida: "+criaturas[myPlayer.enemyId].health);
+                                creatures[myPlayer.enemyId].health-= myPlayer.level+5;
+                                vida_rival.setText("Vida: "+creatures[myPlayer.enemyId].health);
                                 break;
 
                             case 1://Tomas pocion y aumenta tu vida
@@ -1727,8 +1755,8 @@ public class GameGUI extends JFrame{
 
                             case 2://Veneno
                                 if(myPlayer.getPoison() > 0){
-                                    criaturas[myPlayer.enemyId].health-= 20;
-                                    vida_rival.setText("Vida: "+criaturas[myPlayer.enemyId].health);
+                                    creatures[myPlayer.enemyId].health-= 20;
+                                    vida_rival.setText("Vida: "+creatures[myPlayer.enemyId].health);
                                     //myPlayer.objetos[2]--;
                                     myPlayer.setPoison(myPlayer.getPoison()-1);
                                 }
@@ -1738,7 +1766,7 @@ public class GameGUI extends JFrame{
                                 break;
                             case 3://Maldicion imperdonable
                                 if(myPlayer.getUnforgivableCurses() > 0){
-                                    criaturas[myPlayer.enemyId].health=0;
+                                    creatures[myPlayer.enemyId].health=0;
                                     //myPlayer.objetos[3]--;
                                     myPlayer.setUnforgivableCurses(myPlayer.getUnforgivableCurses()-1);
                                 }
@@ -1750,7 +1778,7 @@ public class GameGUI extends JFrame{
                                 //si eliges hiur sales del combate y vuelves al escenario
                                 myPlayer.isFighting =false;
                                 myPlayer.isFightingVersusCriature =false;
-                                criaturas[myPlayer.enemyId].isFighting =false;
+                                creatures[myPlayer.enemyId].isFighting =false;
                                 guion1.setVisible(false);
                                 guion2.setVisible(false);
                                 guion3.setVisible(false);
@@ -1774,7 +1802,7 @@ public class GameGUI extends JFrame{
                         System.out.println("Acción enviada: "+cursor);
                         if (creatures[myPlayer.enemyId].health > 0){
                             Consola.setText("Te han atacado");
-                            myPlayer.health-=(criaturas[myPlayer.enemyId].level+5);
+                            myPlayer.health-=(creatures[myPlayer.enemyId].level+5);
                             Vida.setText("Salud: "+ myPlayer.health);
 
                         }
