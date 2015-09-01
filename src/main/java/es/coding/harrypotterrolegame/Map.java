@@ -15,11 +15,10 @@ public class Map {
 
     //constructor que inicializa el atributo al tamaño por defecto
     public Map(){
-        this.pixelWidth = Integer.valueOf(Configuration.getInstance().getConfig("map.size.width"));
-        this.pixelHeight = Integer.valueOf(Configuration.getInstance().getConfig("map.size.width"));
-        this.cellWidth=Integer.valueOf(Configuration.getInstance().getConfig("map.cell.width"));
-        this.cellHeight=Integer.valueOf(Configuration.getInstance().getConfig("map.cell.height"));
-        this.matrix = initMapCells();
+        this(Integer.valueOf(Configuration.getInstance().getConfig("map.size.width")),
+                Integer.valueOf(Configuration.getInstance().getConfig("map.size.width")),
+                Integer.valueOf(Configuration.getInstance().getConfig("map.cell.width")),
+                Integer.valueOf(Configuration.getInstance().getConfig("map.cell.height")));
     }
 
     //constructor que inicializa el atributo con un tamaño proporcionado

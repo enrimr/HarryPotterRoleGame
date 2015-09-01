@@ -13,10 +13,15 @@ import java.util.Random;
  * Created by Enri on 24/8/15.
  */
 public class GameGUI extends JFrame{
+
+    // Refactored
     ConnectionManager conexionTopic;  //variable que se encarga del paso de mensajes
+    Configuration config = Configuration.getInstance();
     Game game = Game.getInstance();
     Player myPlayer = game.myPlayer;
     Player[] gamePlayers = game.gamePlayers;
+    Player [] creatures = game.getWorld().getCreatures();
+    Player [] teachers = game.getWorld().getTeachers();
 
     //int [][][] mapa = new int[9][numCeldas[0]][numCeldas[1]];
 
@@ -24,14 +29,20 @@ public class GameGUI extends JFrame{
     //int nummap=9; //numeros de mapas del juego
     String [] datos = new String[3]; //variable usada para pasar datos a la hora combatir
 
-    Configuration config = Configuration.getInstance();
+
+
+    //muestra el mapa y la posicion del jugador
+    public void drawPlayerPos(){
+        MapNum.setText("Mapa " + myPlayer.pos[0]);
+        MapCoor.setText("("+myPlayer.pos[1]+","+myPlayer.pos[2]+")");
+    }
 
     void refresh(){ //procedimiento que refresca el escenario
 
         if(!myPlayer.isFighting){ //si el jugador no se encuentra en batalla
             //volvemos a pintar el mapa y al resto de game.gamePlayers
             mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
-            DibujarDemasgame.gamePlayers();
+            DibujarDemasJugadores();
             myPlayer.drawPlayer(jContentPane.getGraphics());
         }
         else{
@@ -128,7 +139,7 @@ public class GameGUI extends JFrame{
                 exp_rival.setVisible(true);
 
                 jContentPane.getGraphics().clearRect(x, y, mapaTam[0], mapaTam[1]);
-                criaturas[myPlayer.enemyId].DrawPlayer(jContentPane.getGraphics(),2,300,50);
+                creatures[myPlayer.enemyId].DrawPlayer(jContentPane.getGraphics(), 2, 300, 50);
                 myPlayer.drawPlayer(jContentPane.getGraphics(), 1, 70, 70);
             }
         }
@@ -226,7 +237,7 @@ public class GameGUI extends JFrame{
         //decimos que estamos peleando contra uan criatura
         myPlayer.isFighting =true;
         myPlayer.isFightingVersusCriature =true;
-        criaturas[rival].isFighting =true;
+        creatures[rival].isFighting =true;
         //habilitamos las funciones del combate
         cursor=0;
         accioncombate.setVisible(true);
@@ -239,14 +250,14 @@ public class GameGUI extends JFrame{
 
         jContentPane.getGraphics().clearRect(x, y, mapaTam[0], mapaTam[1]);
         //pintamos a la criatura y al personaje
-        criaturas[rival].DrawPlayer(jContentPane.getGraphics(),2,300,50);
+        creatures[rival].drawPlayer(jContentPane.getGraphics(), 2, 300, 50);
         myPlayer.drawPlayer(jContentPane.getGraphics(), 1, 70, 70);
         //guardamos sus datos e imprimos su vida y su nivel
-        myPlayer.enemy =criaturas[rival].getName();
+        myPlayer.enemy =creatures[rival].getName();
         myPlayer.enemyId =rival;
 
-        vida_rival.setText("Vida: "+criaturas[rival].health);
-        exp_rival.setText("Nivel: "+criaturas[rival].level);
+        vida_rival.setText("Vida: " + creatures[rival].health);
+        exp_rival.setText("Nivel: "+creatures[rival].level);
         vida_rival.setVisible(true);
         exp_rival.setVisible(true);
 
@@ -266,7 +277,7 @@ public class GameGUI extends JFrame{
         //decimos que estamos hablando con un profesor
         myPlayer.isFighting =true;
         myPlayer.isFightingVersusProfessor =true;
-        profesores[rival].isFighting =true;
+        teachers[rival].isFighting =true;
         //imprimimos las opciones de las preguntas
         cursor=0;
         opcion1.setVisible(true);
@@ -280,7 +291,7 @@ public class GameGUI extends JFrame{
 
         //profesores[enemy].drawPlayer(jContentPane.getGraphics(),2,300,50);
         //myPlayer.drawPlayer(jContentPane.getGraphics(),1,70,70);
-        myPlayer.enemy = profesores[rival].getName();
+        myPlayer.enemy = teachers[rival].getName();
         myPlayer.enemyId = rival;
 
         Random randomGenerator = new Random();
@@ -312,14 +323,14 @@ public class GameGUI extends JFrame{
         }
         //comprobamos si nos encontramos con alguna criatura
         for (int i=0; i<10; i++){
-            if((criaturas[i].pos[0]== myPlayer.pos[0])&&(criaturas[i].pos[1]== myPlayer.pos[1])&&(criaturas[i].pos[2]== myPlayer.pos[2])){
+            if((creatures[i].pos[0]== myPlayer.pos[0])&&(creatures[i].pos[1]== myPlayer.pos[1])&&(creatures[i].pos[2]== myPlayer.pos[2])){
                 combatVersusCriature(i);
             }
         }
         //comprobamos si nos encontramos con algun profesor y si es de nuestra casa y bando para hablar con el
         for (int i=0; i<10; i++){
-            if((profesores[i].pos[0]== myPlayer.pos[0])&&(profesores[i].pos[1]== myPlayer.pos[1])&&(profesores[i].pos[2]== myPlayer.pos[2])){
-                if(((profesores[i].getHouse() == myPlayer.getHouse())||(profesores[i].getHouse() == -1))&&(profesores[i].getFaction() == myPlayer.getFaction())){
+            if((teachers[i].pos[0]== myPlayer.pos[0])&&(teachers[i].pos[1]== myPlayer.pos[1])&&(teachers[i].pos[2]== myPlayer.pos[2])){
+                if(((teachers[i].getHouse() == myPlayer.getHouse())||(teachers[i].getHouse() == -1))&&(teachers[i].getFaction() == myPlayer.getFaction())){
                     askProfessor(i);
                 }
                 else{
@@ -455,13 +466,13 @@ public class GameGUI extends JFrame{
         }
         for(int i=0; i<10; i++)
         {
-            if(criaturas[i].pos[0]== myPlayer.pos[0])
-                criaturas[i].DrawPlayer(jContentPane.getGraphics());
+            if(creatures[i].pos[0]== myPlayer.pos[0])
+                creatures[i].drawPlayer(jContentPane.getGraphics());
         }
         for(int i=0; i<10; i++)
         {
-            if(profesores[i].pos[0]== myPlayer.pos[0])
-                profesores[i].DrawPlayer(jContentPane.getGraphics());
+            if(teachers[i].pos[0]== myPlayer.pos[0])
+                teachers[i].drawPlayer(jContentPane.getGraphics());
         }
 
     }
@@ -472,27 +483,27 @@ public class GameGUI extends JFrame{
         if (myPlayer.pos[2]==1){
             if(myPlayer.pos[0]==0 || myPlayer.pos[0]==1|| myPlayer.pos[0]==2)//comprobamos que no nos chocamos
                 Consola.setText("PlayerUP(): Llegó al límite superior de un mapa");
-            else if(!mundito[myPlayer.pos[0]-3].mapita[myPlayer.pos[1]][myPlayer.pos[2]].isBlocked){
+            else if(!mundito[myPlayer.pos[0]-3].matrix[myPlayer.pos[1]][myPlayer.pos[2]].isBlocked){
                 //cambiamos de mapa
                 myPlayer.pos[0]-=3;
                 myPlayer.pos[2]=(numCeldas[1]-1);//eSTABA EN -1
                 Consola.setText("Estamos en el mapa:" + myPlayer.pos[0]);
                 jContentPane.getGraphics().clearRect(180,20,200,200);
                 mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), x, y);
-                myPlayer.DrawPlayer(jContentPane.getGraphics());
+                myPlayer.drawPlayer(jContentPane.getGraphics());
 
-                myPlayer.DrawPlayerPos();
+                drawPlayerPos();
             }
             //si hay un obstaculo en el otro mapa no puedes pasar
             else {Consola.setText("PlayerUP(): hay un obstáculo en el otro mapa");}
         }
         // Si no hay obstáculo nos movemos
-        else if (!mundito[myPlayer.pos[0]].mapita[myPlayer.pos[1]][myPlayer.pos[2]-1].isBlocked){
+        else if (!mundito[myPlayer.pos[0]].matrix[myPlayer.pos[1]][myPlayer.pos[2]-1].isBlocked){
             Consola.setText("");
-            myPlayer.RecoverLayer(jContentPane.getGraphics());//recoverLayer();
+            myPlayer.recoverLayer(jContentPane.getGraphics());//recoverLayer();
             myPlayer.pos[2]-=1;
-            myPlayer.DrawPlayer(jContentPane.getGraphics());
-            myPlayer.DrawPlayerPos();
+            myPlayer.drawPlayer(jContentPane.getGraphics());
+            drawPlayerPos();
         }
         else {//sino decimos que nos chocamos
             Consola.setText("PlayerUP(): Se chocó");
@@ -504,26 +515,26 @@ public class GameGUI extends JFrame{
         if ((myPlayer.pos[2])==(numCeldas[1])-1){
             if(myPlayer.pos[0]==6 || myPlayer.pos[0]==7|| myPlayer.pos[0]==8)//comprobamos que no estamos en el limite
                 Consola.setText("PlayerUP(): Llegó al límite inferior de un mapa");
-            else if(!mundito[myPlayer.pos[0]+3].mapita[myPlayer.pos[1]][0].isBlocked && !mundito[myPlayer.pos[0]+3].mapita[myPlayer.pos[1]][1].isBlocked){ //Antes no estaba el &&
+            else if(!mundito[myPlayer.pos[0]+3].matrix[myPlayer.pos[1]][0].isBlocked && !mundito[myPlayer.pos[0]+3].matrix[myPlayer.pos[1]][1].isBlocked){ //Antes no estaba el &&
                 //				Cambiamos de mapa
                 myPlayer.pos[0]+=3;
                 myPlayer.pos[2]=1;
                 Consola.setText("Estamos en el mapa:" + myPlayer.pos[0]);
                 jContentPane.getGraphics().clearRect(180,20,200,200);
                 mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), x, y);
-                myPlayer.DrawPlayer(jContentPane.getGraphics());
-                myPlayer.DrawPlayerPos();
+                myPlayer.drawPlayer(jContentPane.getGraphics());
+                drawPlayerPos();
             }
             //			si hay un obstaculo en el otro mapa no puedes pasar
             else {Consola.setText("PlayerDown(): hay un obstáculo en el otro mapa");}
         }
         //si no hay obstaculo nos movemos
-        else if (!mundito[myPlayer.pos[0]].mapita[myPlayer.pos[1]][myPlayer.pos[2]+1].isBlocked){//Bedebia ser JugPos[2]+1
+        else if (!mundito[myPlayer.pos[0]].matrix[myPlayer.pos[1]][myPlayer.pos[2]+1].isBlocked){//Bedebia ser JugPos[2]+1
             Consola.setText("");
-            myPlayer.RecoverLayer(jContentPane.getGraphics());
+            myPlayer.recoverLayer(jContentPane.getGraphics());
             myPlayer.pos[2]+=1;
-            myPlayer.DrawPlayer(jContentPane.getGraphics());
-            myPlayer.DrawPlayerPos();
+            myPlayer.drawPlayer(jContentPane.getGraphics());
+            drawPlayerPos();
         }
         //sino decimos que nos chocamos
         else Consola.setText("PlayerDown(): Se chocó");
@@ -534,26 +545,26 @@ public class GameGUI extends JFrame{
         if (myPlayer.pos[1]==(numCeldas[0]-1)){
             if(myPlayer.pos[0]==2 || myPlayer.pos[0]==5|| myPlayer.pos[0]==8)//comprobamos que hay mas mapas
                 Consola.setText("PlayerUP(): Llegó al límite derecho del mundo");
-            else if(!mundito[myPlayer.pos[0]+1].mapita[0][myPlayer.pos[2]].isBlocked){
+            else if(!mundito[myPlayer.pos[0]+1].matrix[0][myPlayer.pos[2]].isBlocked){
                 //Cambiamos de mapa
                 myPlayer.pos[0]+=1;
                 myPlayer.pos[1]=0;
                 Consola.setText("Estamos en el mapa:" + myPlayer.pos[0]);
                 jContentPane.getGraphics().clearRect(180,20,200,200);
                 mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), x, y);
-                myPlayer.DrawPlayer(jContentPane.getGraphics());
-                myPlayer.DrawPlayerPos();
+                myPlayer.drawPlayer(jContentPane.getGraphics());
+                drawPlayerPos();
             }
             else {Consola.setText("PlayerRight(): hay un obstáculo en el otro mapa");}
             // Comprobamos si puede ir a una mapa válido
 
         }//sin no hay obstaculo nos movemos
-        else if (!mundito[myPlayer.pos[0]].mapita[myPlayer.pos[1]+1][myPlayer.pos[2]].isBlocked && !mundito[myPlayer.pos[0]].mapita[myPlayer.pos[1]+1][myPlayer.pos[2]+1].isBlocked) {//mIRAMOS LOS PIES
+        else if (!mundito[myPlayer.pos[0]].matrix[myPlayer.pos[1]+1][myPlayer.pos[2]].isBlocked && !mundito[myPlayer.pos[0]].matrix[myPlayer.pos[1]+1][myPlayer.pos[2]+1].isBlocked) {//mIRAMOS LOS PIES
             Consola.setText("");
-            myPlayer.RecoverLayer(jContentPane.getGraphics());
+            myPlayer.recoverLayer(jContentPane.getGraphics());
             myPlayer.pos[1]+=1;
-            myPlayer.DrawPlayer(jContentPane.getGraphics());
-            myPlayer.DrawPlayerPos();
+            myPlayer.drawPlayer(jContentPane.getGraphics());
+            drawPlayerPos();
         }
         else//si hay obstaculo le decimos que ha chocado
             Consola.setText("PlayerRight(): Se chocó");
@@ -564,26 +575,26 @@ public class GameGUI extends JFrame{
         if (myPlayer.pos[1]==0){
             if(myPlayer.pos[0]==0 || myPlayer.pos[0]==3|| myPlayer.pos[0]==6)//Se mira si hay otro mapa
                 Consola.setText("PlayerUP(): Llegó al límite inzquierdo del mundo");
-            else if(!mundito[myPlayer.pos[0]-1].mapita[(numCeldas[0]-1)][myPlayer.pos[2]].isBlocked){
+            else if(!mundito[myPlayer.pos[0]-1].matrix[(numCeldas[0]-1)][myPlayer.pos[2]].isBlocked){
                 //				//cambiamos de mapa
                 myPlayer.pos[0]-=1;
                 myPlayer.pos[1]=(numCeldas[1]-1);
                 Consola.setText("Estamos en el mapa:" + myPlayer.pos[0]);
                 jContentPane.getGraphics().clearRect(180,20,200,200);
                 mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), x, y);
-                myPlayer.DrawPlayer(jContentPane.getGraphics());
-                myPlayer.DrawPlayerPos();
+                myPlayer.drawPlayer(jContentPane.getGraphics());
+                drawPlayerPos();
             }
             else {Consola.setText("PlayerLeft(): hay un obstáculo en el otro mapa");}
             // Comprobamos si puede ir a una mapa válido
 
         }//si no hay obstaculo nos movemos
-        else if (!mundito[myPlayer.pos[0]].mapita[myPlayer.pos[1]-1][myPlayer.pos[2]].isBlocked && !mundito[myPlayer.pos[0]].mapita[myPlayer.pos[1]-1][myPlayer.pos[2]-1].isBlocked){
+        else if (!mundito[myPlayer.pos[0]].matrix[myPlayer.pos[1]-1][myPlayer.pos[2]].isBlocked && !mundito[myPlayer.pos[0]].matrix[myPlayer.pos[1]-1][myPlayer.pos[2]-1].isBlocked){
             Consola.setText("");
-            myPlayer.RecoverLayer(jContentPane.getGraphics());
+            myPlayer.recoverLayer(jContentPane.getGraphics());
             myPlayer.pos[1]-=1;
-            myPlayer.DrawPlayer(jContentPane.getGraphics());
-            myPlayer.DrawPlayerPos();
+            myPlayer.drawPlayer(jContentPane.getGraphics());
+            drawPlayerPos();
         }
         else Consola.setText("PlayerLeft(): Se chocó");//sino le decimos que no puede continuar
     }
@@ -1019,32 +1030,7 @@ public class GameGUI extends JFrame{
                     Vida.setVisible(true);
                     Exp.setVisible(true);
                     Nivel.setVisible(true);
-                    //inicializamos las criaturas y los profesores
-                    criaturas[0]=new Player("lloron", 1, 7, 7, 20, -1, 1, 1, 50, 1, 0, 0, 0, 0, 15);
-                    criaturas[1]=new Player("lloron", 4, 5, 5, 20, -1, 1, 1, 50, 2, 0, 0, 0, 0, 2*5);
-                    criaturas[2]=new Player("lloron", 7, 12, 12, 20, -1, 1, 1, 50, 3, 0, 0, 0, 0, 3*5);
-                    criaturas[3]=new Player("lloron", 8, 10, 10, 20, -1, 1, 1, 50, 4, 0, 0, 0, 0, 4*5);
-                    criaturas[4]=new Player("lloron", 4, 10, 10, 20, -1, 1, 1, 50, 5, 0, 0, 0, 0, 5*5);
 
-                    criaturas[5]=new Player("trol", 0, 10, 10, 21, -1, -1, 1, 250, 5*2, 0, 0, 0, 0, 5*15);
-                    criaturas[6]=new Player("trol", 2, 5, 5, 21, -1, -1, 1, 250, 6*2, 0, 0, 0, 0, 6*15);
-                    criaturas[7]=new Player("trol", 6, 10, 10, 21, -1, -1, 1, 250, 7*2, 0, 0, 0, 0, 7*15);
-                    criaturas[8]=new Player("trol", 8, 5, 5, 21, -1, -1, 1, 250, 8*2, 0, 0, 0, 0, 8*15);
-
-                    criaturas[9]=new Player("nagini", 7, 7, 7, 10, 1, 0, 1, 550, 50, 0, 0, 0, 0, 9*20);
-
-                    profesores[0]=new Player("McGonagal", 0, 7, 5, 11, 0, 1, 0, 500, 50, 0, 1, 1, 0, 1000);
-                    profesores[1]=new Player("Snape", 0, 7, 10, 9, 1, 0, 0, 500, 50, 0, 1, 1, 0, 1000);
-                    profesores[2]=new Player("Sprout", 6, 7, 5, 12, 2, 1, 0, 500, 50, 0, 1, 1, 0, 1000);
-                    profesores[3]=new Player("Flitwich", 6, 7, 10, 13, 3, 0, 0, 500, 50, 0, 1, 1, 0, 1000);
-
-                    profesores[4]=new Player("Lucius", 2, 7, 5, 14, 0, 0, 1, 500, 50, 0, 1, 1, 0, 1000);
-                    profesores[5]=new Player("Bellatrix", 2, 7, 10, 15, 1, 1, 1, 500, 50, 0, 1, 1, 0, 1000);
-                    profesores[6]=new Player("Colagusano", 8, 7, 5, 16, 2, 0, 1, 500, 50, 0, 1, 1, 0, 1000);
-                    profesores[7]=new Player("Umbrigde", 8, 7, 10, 17, 3, 1, 1, 500, 50, 0, 1, 1, 0, 1000);
-
-                    profesores[8]=new Player("Dumbledore", 3, 7, 13, 18, -1, 0, 0, 1000, 100, 0, 0, 0, 1, 10000);
-                    profesores[9]=new Player("Voldemort",  5, 7, 2, 19, -1, 0, 1, 1000, 100, 0, 0, 0, 1, 10000);
 
                 }
             });
@@ -1113,7 +1099,7 @@ public class GameGUI extends JFrame{
                         if(myPlayer.pos[2]>9)charY="";
                         //mandamos nuestra nueva posicion
                         conexionTopic.sendMessage("pos-"+ myPlayer.getName()+"*"+charMapa+ myPlayer.pos[0]+charX+ myPlayer.pos[1]+charY+ myPlayer.pos[2]);
-                        DibujarDemasgame.gamePlayers();
+                        DibujarDemasJugadores();
                         //Comprobamos si hay encuentro
                         encuentro();
                     }
@@ -1148,7 +1134,7 @@ public class GameGUI extends JFrame{
                         if(myPlayer.pos[2]>9)charY="";
                         //envio las nuevas posiciones
                         conexionTopic.sendMessage("pos-"+ myPlayer.getName()+"*"+charMapa+ myPlayer.pos[0]+charX+ myPlayer.pos[1]+charY+ myPlayer.pos[2]);
-                        DibujarDemasgame.gamePlayers();
+                        DibujarDemasJugadores();
                         //comprobamos que no haya encuentro
                         encuentro();
                     }
@@ -1217,7 +1203,7 @@ public class GameGUI extends JFrame{
                         if(myPlayer.pos[1]>9)charX="";
                         if(myPlayer.pos[2]>9)charY="";
                         conexionTopic.sendMessage("pos-"+ myPlayer.getName()+"*"+charMapa+ myPlayer.pos[0]+charX+ myPlayer.pos[1]+charY+ myPlayer.pos[2]);
-                        DibujarDemasgame.gamePlayers();
+                        DibujarDemasJugadores();
                         encuentro();
                     }
                 }
@@ -1250,7 +1236,7 @@ public class GameGUI extends JFrame{
                         if(myPlayer.pos[1]>9)charX="";
                         if(myPlayer.pos[2]>9)charY="";
                         conexionTopic.sendMessage("pos-"+ myPlayer.getName()+"*"+charMapa+ myPlayer.pos[0]+charX+ myPlayer.pos[1]+charY+ myPlayer.pos[2]);
-                        DibujarDemasgame.gamePlayers();
+                        DibujarDemasJugadores();
                         encuentro();
                     }
                 }
@@ -1627,7 +1613,7 @@ public class GameGUI extends JFrame{
         accioncombate.setVisible(false);
 
         mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
-        DibujarDemasgame.gamePlayers();
+        DibujarDemasJugadores();
         myPlayer.drawPlayer(jContentPane.getGraphics());
         Exp.setText("Exp: "+ myPlayer.experience);
         Nivel.setText("Nivel: "+ myPlayer.level);
@@ -1684,7 +1670,7 @@ public class GameGUI extends JFrame{
         myPlayer.isFightingVersusProfessor = false;
 
         mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
-        DibujarDemasgame.gamePlayers();
+        DibujarDemasJugadores();
         myPlayer.drawPlayer(jContentPane.getGraphics());
 
     }
@@ -1702,7 +1688,7 @@ public class GameGUI extends JFrame{
         pregunta.setVisible(false);
 
         mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
-        DibujarDemasgame.gamePlayers();
+        DibujarDemasJugadores();
         myPlayer.drawPlayer(jContentPane.getGraphics());
 
         profesores[myPlayer.enemyId].isFighting = false;
@@ -1780,13 +1766,13 @@ public class GameGUI extends JFrame{
                                 accioncombate.setVisible(false);
 
                                 mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
-                                DibujarDemasgame.gamePlayers();
+                                DibujarDemasJugadores();
                                 myPlayer.drawPlayer(jContentPane.getGraphics());
                                 break;
                         }
                         //ataque de la criatura
                         System.out.println("Acción enviada: "+cursor);
-                        if (criaturas[myPlayer.enemyId].health > 0){
+                        if (creatures[myPlayer.enemyId].health > 0){
                             Consola.setText("Te han atacado");
                             myPlayer.health-=(criaturas[myPlayer.enemyId].level+5);
                             Vida.setText("Salud: "+ myPlayer.health);
@@ -1904,7 +1890,7 @@ public class GameGUI extends JFrame{
                                         accioncombate.setVisible(false);
 
                                         mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
-                                        DibujarDemasgame.gamePlayers();
+                                        DibujarDemasJugadores();
                                         myPlayer.drawPlayer(jContentPane.getGraphics());
                                         myPlayer.isFighting =false;
 

@@ -20,6 +20,39 @@ public class Game {
         this.gamePlayers = new Player[100]; //Vector de otro de jugadores
         this.gamePlayersLength = 0;
         this.world = World.getInstance();
+        this.world.setTeachers(GameUtils.initTeachers());
+        this.world.setCreatures(GameUtils.initCreatures());
     }
 
+    public Player getMyPlayer() {
+        return myPlayer;
+    }
+
+    public void setMyPlayer(Player myPlayer) {
+        this.myPlayer = myPlayer;
+    }
+
+    public Player[] getGamePlayers() {
+        return gamePlayers;
+    }
+
+    public void setGamePlayers(Player[] gamePlayers) {
+        this.gamePlayers = gamePlayers;
+    }
+
+    public int getGamePlayersLength() {
+        return gamePlayersLength;
+    }
+
+    public void setGamePlayersLength(int gamePlayersLength) {
+        this.gamePlayersLength = gamePlayersLength;
+    }
+
+    public World getWorld() {
+        return world;
+    }
+
+    public void setWorld(World world) {
+        this.world = world;
+    }
 }

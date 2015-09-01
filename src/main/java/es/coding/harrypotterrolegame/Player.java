@@ -85,11 +85,6 @@ public class Player{
         int heightImage = file.getIconHeight();
         g.drawImage(img,x+x1,y+y1,widthImage/esc,heightImage/esc,file.getImageObserver());
     }
-    //muestra el mapa y la posicion del jugador
-    public void DrawPlayerPos(){
-        MapNum.setText("Mapa " + pos[0]);
-        MapCoor.setText("("+pos[1]+","+pos[2]+")");
-    }
 
     public String getName() {
         return name;
