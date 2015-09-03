@@ -9,7 +9,8 @@ import javax.jms.*;
 public class Chateo extends Thread {
     public void run() {
         try {
-            MessageConsumer receiver = session.createConsumer(destination);
+
+            MessageConsumer receiver = Configuration.getInstance().session.createConsumer(Configuration.getInstance().destination);
             receiver.setMessageListener(new MessageListener() {
                 public void onMessage(Message message) {
                     try{
