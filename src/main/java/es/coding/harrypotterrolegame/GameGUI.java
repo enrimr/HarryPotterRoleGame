@@ -1014,7 +1014,6 @@ public class GameGUI extends JFrame{
                     mapbosquecamino.matrix[14][10] = new MapCell(suelobosquemarron[0],false);
                     mapbosquecamino.matrix[14][11] = new MapCell(suelobosquemarron[1],false);
 
-
                     control=0;
                     for (int i=0;i<numCeldas[0];i++){
                         for(int j=0;j<numCeldas[1];j++){
