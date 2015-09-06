@@ -5,6 +5,24 @@ package es.coding.harrypotterrolegame;
  */
 public class GameUtils {
 
+    static String [] suelohogwarts1 = {"./images/floor/hogwarts000.gif",
+            "./images/floor/hogwarts001.gif",
+            "./images/floor/hogwarts002.gif"};
+    static String [] suelohogwarts2 = {"./images/floor/hogwarts011.gif",
+            "./images/floor/hogwarts012.gif",
+            "./images/floor/hogwarts010.gif"};
+    static String [] suelobosqueverde = {"./images/floor/bosque1.gif",
+            "./images/floor/bosque2.gif"};
+    static String [] suelobosquemarron = {"./images/floor/tierra1.gif",
+            "./images/floor/tierra2.gif",
+            "./images/floor/tierra3.gif"};
+    static String [] suelotenebrosa1 = {"./images/floor/tenebrosa000.gif",
+            "./images/floor/tenebrosa001.gif",
+            "./images/floor/tenebrosa002.gif"};
+    static String [] suelotenebrosa2 = {"./images/floor/tenebrosa011.gif",
+            "./images/floor/tenebrosa012.gif",
+            "./images/floor/tenebrosa010.gif"};
+
     public static Player [] initCreatures(){
 
         Player [] creatures = new Player[10];
@@ -42,5 +60,113 @@ public class GameUtils {
         teachers[9]=new Player("Voldemort",  5, 7, 2, 19, -1, 0, 1, 1000, 100, 0, 0, 0, 1, 10000);
 
         return teachers;
+    }
+
+    public static Map [] initMaps(){
+
+        //Declaracion e inicializacion de los distintos escenarios
+
+        int sizeWidth = Integer.parseInt(Configuration.getInstance().getConfig("map.sizel.width"));
+        int sizeHeight = Integer.parseInt(Configuration.getInstance().getConfig("map.size.height"));
+        int cellWidth = Integer.parseInt(Configuration.getInstance().getConfig("map.cell.width"));
+        int cellHeight = Integer.parseInt(Configuration.getInstance().getConfig("map.cell.height"));
+
+        Map map1 = new Map(
+                sizeWidth,
+                sizeHeight,
+                cellWidth,
+                cellHeight);
+        Map map2 = new Map(
+                sizeWidth,
+                sizeHeight,
+                cellWidth,
+                cellHeight);
+        Map mapbosque = new Map(
+                sizeWidth,
+                sizeHeight,
+                cellWidth,
+                cellHeight);
+        Map mapbosquecamino = new Map(
+                sizeWidth,
+                sizeHeight,
+                cellWidth,
+                cellHeight);
+
+        int control=0;
+        for (int i=0;i<cellWidth;i++){
+            for(int j=0;j<cellHeight;j++){
+                if (i%2==0)
+                    map1.matrix[j][i] = new MapCell(suelohogwarts1[control],false);
+                else
+                    map1.matrix[j][i] = new MapCell(suelohogwarts2[control],false);
+                if (control==2) control=0;
+                else control++;
+            }
+        }
+
+        for (int i=0;i<cellWidth;i++){
+            for(int j=0;j<cellHeight;j++){
+                mapbosque.matrix[j][i] = new MapCell(suelobosqueverde[0],false);
+                mapbosquecamino.matrix[j][i] = new MapCell(suelobosqueverde[1],false);
+            }
+        }
+        //preguntar por enrik
+        mapbosquecamino.matrix[0][7] = new MapCell(suelobosquemarron[1],false);
+        mapbosquecamino.matrix[0][8] = new MapCell(suelobosquemarron[0],false);
+        mapbosquecamino.matrix[1][7] = new MapCell(suelobosquemarron[0],false);
+        mapbosquecamino.matrix[1][8] = new MapCell(suelobosquemarron[0],false);
+        mapbosquecamino.matrix[2][7] = new MapCell(suelobosquemarron[1],false);
+        mapbosquecamino.matrix[2][8] = new MapCell(suelobosquemarron[1],false);
+        mapbosquecamino.matrix[3][7] = new MapCell(suelobosquemarron[2],false);
+        mapbosquecamino.matrix[3][8] = new MapCell(suelobosquemarron[2],false);
+        mapbosquecamino.matrix[4][8] = new MapCell(suelobosquemarron[2],false);
+        mapbosquecamino.matrix[4][9] = new MapCell(suelobosquemarron[1],false);
+        mapbosquecamino.matrix[5][10] = new MapCell(suelobosquemarron[2],false);
+        mapbosquecamino.matrix[5][9] = new MapCell(suelobosquemarron[1],false);
+        mapbosquecamino.matrix[6][10] = new MapCell(suelobosquemarron[2],false);
+        mapbosquecamino.matrix[6][9] = new MapCell(suelobosquemarron[1],false);
+        mapbosquecamino.matrix[7][10] = new MapCell(suelobosquemarron[2],false);
+        mapbosquecamino.matrix[7][9] = new MapCell(suelobosquemarron[2],false);
+        mapbosquecamino.matrix[8][9] = new MapCell(suelobosquemarron[1],false);
+        mapbosquecamino.matrix[8][10] = new MapCell(suelobosquemarron[0],false);
+        mapbosquecamino.matrix[9][10] = new MapCell(suelobosquemarron[0],false);
+        mapbosquecamino.matrix[10][10] = new MapCell(suelobosquemarron[0],false);
+        mapbosquecamino.matrix[11][10] = new MapCell(suelobosquemarron[0],false);
+        mapbosquecamino.matrix[12][9] = new MapCell(suelobosquemarron[0],false);
+        mapbosquecamino.matrix[12][10] = new MapCell(suelobosquemarron[0],false);
+        mapbosquecamino.matrix[13][10] = new MapCell(suelobosquemarron[2],false);
+        mapbosquecamino.matrix[13][11] = new MapCell(suelobosquemarron[2],false);
+        mapbosquecamino.matrix[14][10] = new MapCell(suelobosquemarron[0],false);
+        mapbosquecamino.matrix[14][11] = new MapCell(suelobosquemarron[1],false);
+
+        control=0;
+        for (int i=0;i<cellWidth;i++){
+            for(int j=0;j<cellHeight;j++){
+                if (i%2==0)
+                    map2.matrix[j][i] = new MapCell(suelotenebrosa1[control],false);
+                else
+                    map2.matrix[j][i] = new MapCell(suelotenebrosa2[control],false);
+                if (control==2) control=0;
+                else control++;
+            }
+        }
+
+        Map [] myWorld = new Map[9];
+        // Pintamos Hogwarts
+        myWorld[0]=map1;
+        myWorld[3]=map1;
+        myWorld[6]=map1;
+
+        // Pintamos el bosque de en medio
+        myWorld[1]=mapbosque;
+        myWorld[4]=mapbosquecamino;
+        myWorld[7]=mapbosque;
+
+        // Pintamos la Ciudad Tenebrosa
+        myWorld[2]=map2;
+        myWorld[5]=map2;
+        myWorld[8]=map2;
+
+        return myWorld;
     }
 }
