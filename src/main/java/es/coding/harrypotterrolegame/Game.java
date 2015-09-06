@@ -22,6 +22,7 @@ public class Game {
         this.world = World.getInstance();
         this.world.setTeachers(GameUtils.initTeachers());
         this.world.setCreatures(GameUtils.initCreatures());
+        this.world.setMaps(GameUtils.initMaps());
     }
 
     public Player getMyPlayer() {
