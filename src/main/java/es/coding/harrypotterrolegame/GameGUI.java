@@ -22,6 +22,7 @@ public class GameGUI extends JFrame{
     Player[] gamePlayers = game.gamePlayers;
     Player [] creatures = game.getWorld().getCreatures();
     Player [] teachers = game.getWorld().getTeachers();
+    World world = game.world;
 
     //int [][][] mapa = new int[9][numCeldas[0]][numCeldas[1]];
 
@@ -141,8 +142,8 @@ public class GameGUI extends JFrame{
                 jContentPane.getGraphics().clearRect(Integer.parseInt(
                         Configuration.getInstance().getConfig("x")),
                         Integer.parseInt(Configuration.getInstance().getConfig("y")),
-                        mapaTam[0],
-                        mapaTam[1]);
+                        world.getMaps()[myPlayer.pos[0]],//mapaTam[0],
+                        world.getMaps()[myPlayer.pos[0]]//mapaTam[1]);
                 creatures[myPlayer.enemyId].drawPlayer(jContentPane.getGraphics(), 2, 300, 50);
                 myPlayer.drawPlayer(jContentPane.getGraphics(), 1, 70, 70);
             }
