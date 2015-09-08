@@ -9,7 +9,7 @@ import javax.jms.*;
 public class DataBase extends Thread { // class BaseDatos extends Runnable,
     public void run() {
         try {
-            MessageConsumer receiver = session.createConsumer(destination);
+            MessageConsumer receiver = Configuration.getInstance().session.createConsumer(Configuration.getInstance().destination);
             receiver.setMessageListener(new MessageListener() {
                 public void onMessage(Message message) {
                     try{
@@ -22,8 +22,8 @@ public class DataBase extends Thread { // class BaseDatos extends Runnable,
                         if(indice != -1){
                             indice = textoRecibido.indexOf("-");
                             //si el mensaje es para mi
-                            String Nombre=textoRecibido.substring(indice+1, textoRecibido.indexOf("*"));
-                            if (nombre.getText().equals(Nombre)){
+                            String nombre = textoRecibido.substring(indice+1, textoRecibido.indexOf("*"));
+                            if (nombre.getText().equals(nombre)){
                                 //obtengo los datos pasados en el mensaje
                                 //funcion substring corta ristras segun las posiciones que nos interesan
                                 String Mapa= textoRecibido.substring(textoRecibido.indexOf("*")+1,textoRecibido.indexOf("*")+3);
@@ -72,6 +72,7 @@ public class DataBase extends Thread { // class BaseDatos extends Runnable,
                                 char []r13 =exp.toCharArray();
 
                                 int a=1;
+                                int i;
                                 for(i=0; i< r13.length-1; i++)
                                 {
                                     a = a*10;
@@ -86,7 +87,22 @@ public class DataBase extends Thread { // class BaseDatos extends Runnable,
                                     a = a / 10;
                                 }
                                 //creamos a nuestro jugador con los datos pasados por la base de datos
-                                MiJugador= new Player(Nombre, coordMapa, coordX, coordY, imgnum, casanum, sexonum, bandonum, vidanum, nivelnum, objeto1num, objeto2num, objeto3num, objeto4num, expnum);
+                                Game.getInstance().setMyPlayer(new Player(nombre,
+                                        coordMapa,
+                                        coordX,
+                                        coordY,
+                                        imgnum,
+                                        casanum,
+                                        sexonum,
+                                        bandonum,
+                                        vidanum,
+                                        nivelnum,
+                                        objeto1num,
+                                        objeto2num,
+                                        objeto3num,
+                                        objeto4num,
+                                        expnum));
+                                
                                 //mostramos en la pantalla algunos datos relevantes
                                 Vida.setText("Vida: "+ vidanum);
                                 Nivel.setText("Nivel: "+ nivelnum);

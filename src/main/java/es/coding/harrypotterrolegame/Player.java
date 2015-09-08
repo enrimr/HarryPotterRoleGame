@@ -70,12 +70,12 @@ public class Player{
     public void recoverLayer(Graphics g){
         Game.getInstance().world.maps[pos[0]].matrix[pos[1]][pos[2]].drawCell(
                 g,
-                Configuration.getInstance().getConfig("x")+pos[1]*mapaTam[0]/Configuration.getInstance().getConfig("map.cell.width"),
-                Integer.parseInt(Configuration.getInstance().getConfig("y"))+pos[2]*mapaTam[1]/numCeldas[1]);
+                Integer.parseInt(Configuration.getInstance().getConfig("x"))+pos[1]*World.getInstance().getMaps()[pos[0]].getPixelWidth()/World.getInstance().getMaps()[pos[0]].getCellWidth(),
+                Integer.parseInt(Configuration.getInstance().getConfig("y"))+pos[2]*World.getInstance().getMaps()[pos[0]].getPixelHeight()/World.getInstance().getMaps()[pos[0]].getCellHeight());
         Game.getInstance().world.maps[pos[0]].matrix[pos[1]][pos[2]-1].drawCell(
                 g,
-                Configuration.getInstance().getConfig("x")+pos[1]*mapaTam[0]/Configuration.getInstance().getConfig("map.cell.width"),
-                Integer.parseInt(Configuration.getInstance().getConfig("y"))+(pos[2]-1)*mapaTam[1]/numCeldas[1]);
+                Integer.parseInt(Configuration.getInstance().getConfig("x"))+pos[1]*World.getInstance().getMaps()[pos[0]].getPixelWidth()/World.getInstance().getMaps()[pos[0]].getCellWidth(),
+                Integer.parseInt(Configuration.getInstance().getConfig("y"))+(pos[2]-1)*World.getInstance().getMaps()[pos[0]].getPixelHeight()/World.getInstance().getMaps()[pos[0]].getCellHeight());
     }
     //funcion que pinta la imagen del jugador en el mapa con paramtros por defecto
     public void drawPlayer(Graphics g){
@@ -84,8 +84,8 @@ public class Player{
         int heightImage = file.getIconHeight();
         g.drawImage(
                 img,
-                Integer.parseInt(Configuration.getInstance().getConfig("x"))+pos[1]*mapaTam[0]/Configuration.getInstance().getConfig("map.cell.width"),
-                Integer.parseInt(Configuration.getInstance().getConfig("y"))+pos[2]*mapaTam[1]/numCeldas[1]-(heightImage/Integer.parseInt(Configuration.getInstance().getConfig("scale"))-mapaTam[1]/numCeldas[1]),
+                Integer.parseInt(Configuration.getInstance().getConfig("x"))+pos[1]*World.getInstance().getMaps()[pos[0]].getPixelWidth()/World.getInstance().getMaps()[pos[0]].getCellWidth(),
+                Integer.parseInt(Configuration.getInstance().getConfig("y"))+pos[2]*World.getInstance().getMaps()[pos[0]].getPixelHeight()/World.getInstance().getMaps()[pos[0]].getCellHeight()-(heightImage/Integer.parseInt(Configuration.getInstance().getConfig("scale"))-World.getInstance().getMaps()[pos[0]].getPixelHeight()/World.getInstance().getMaps()[pos[0]].getCellHeight()),
                 widthImage/Integer.parseInt(Configuration.getInstance().getConfig("scale")),
                 heightImage/Integer.parseInt(Configuration.getInstance().getConfig("scale")),
                 file.getImageObserver());

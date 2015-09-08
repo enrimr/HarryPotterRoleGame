@@ -142,8 +142,8 @@ public class GameGUI extends JFrame{
                 jContentPane.getGraphics().clearRect(Integer.parseInt(
                         Configuration.getInstance().getConfig("x")),
                         Integer.parseInt(Configuration.getInstance().getConfig("y")),
-                        world.getMaps()[myPlayer.pos[0]],//mapaTam[0],
-                        world.getMaps()[myPlayer.pos[0]]//mapaTam[1]);
+                        world.getMaps()[myPlayer.pos[0]].getPixelWidth(),//mapaTam[0],
+                        world.getMaps()[myPlayer.pos[0]].getPixelHeight());//mapaTam[1]);
                 creatures[myPlayer.enemyId].drawPlayer(jContentPane.getGraphics(), 2, 300, 50);
                 myPlayer.drawPlayer(jContentPane.getGraphics(), 1, 70, 70);
             }
@@ -223,8 +223,8 @@ public class GameGUI extends JFrame{
         jContentPane.getGraphics().clearRect(
                 Integer.parseInt(Configuration.getInstance().getConfig("x")),
                 Integer.parseInt(Configuration.getInstance().getConfig("y")),
-                mapaTam[0],
-                mapaTam[1]);
+                world.getMaps()[myPlayer.pos[0]].getPixelWidth(),
+                world.getMaps()[myPlayer.pos[0]].getPixelHeight());
         drawBackground("./imagenes/fondos/duelo.gif");
         //activamos los recursos del combate
         cursor=0;
@@ -260,8 +260,8 @@ public class GameGUI extends JFrame{
         jContentPane.getGraphics().clearRect(
                 Integer.parseInt(Configuration.getInstance().getConfig("x")),
                 Integer.parseInt(Configuration.getInstance().getConfig("y")),
-                mapaTam[0],
-                mapaTam[1]);
+                world.getMaps()[myPlayer.pos[0]].getPixelWidth(),//mapaTam[0],
+                world.getMaps()[myPlayer.pos[0]].getPixelHeight());//mapaTam[1]);
         //pintamos a la criatura y al personaje
         creatures[rival].drawPlayer(jContentPane.getGraphics(), 2, 300, 50);
         myPlayer.drawPlayer(jContentPane.getGraphics(), 1, 70, 70);
@@ -303,8 +303,8 @@ public class GameGUI extends JFrame{
         jContentPane.getGraphics().clearRect(
                 Integer.parseInt(Configuration.getInstance().getConfig("x")),
                 Integer.parseInt(Configuration.getInstance().getConfig("y")),
-                mapaTam[0],
-                mapaTam[1]);
+                world.getMaps()[myPlayer.pos[0]].getPixelWidth(),//mapaTam[0],
+                world.getMaps()[myPlayer.pos[0]].getPixelHeight());//mapaTam[1]);
 
         //profesores[enemy].drawPlayer(jContentPane.getGraphics(),2,300,50);
         //myPlayer.drawPlayer(jContentPane.getGraphics(),1,70,70);
@@ -503,7 +503,7 @@ public class GameGUI extends JFrame{
             else if(!mundito[myPlayer.pos[0]-3].matrix[myPlayer.pos[1]][myPlayer.pos[2]].isBlocked){
                 //cambiamos de mapa
                 myPlayer.pos[0]-=3;
-                myPlayer.pos[2]=(numCeldas[1]-1);//eSTABA EN -1
+                myPlayer.pos[2]=(world.getMaps()[myPlayer.pos[0]].getCellHeight()-1);//eSTABA EN -1
                 Consola.setText("Estamos en el mapa:" + myPlayer.pos[0]);
                 jContentPane.getGraphics().clearRect(180,20,200,200);
                 mundito[myPlayer.pos[0]].drawMap(
@@ -532,7 +532,7 @@ public class GameGUI extends JFrame{
 
     void PlayerDown(){
         //Comprobamos si cambiará de mapa
-        if ((myPlayer.pos[2])==(numCeldas[1])-1){
+        if ((myPlayer.pos[2])==(world.getMaps()[myPlayer.pos[0]].getCellHeight())-1){
             if(myPlayer.pos[0]==6 || myPlayer.pos[0]==7|| myPlayer.pos[0]==8)//comprobamos que no estamos en el limite
                 Consola.setText("PlayerUP(): Llegó al límite inferior de un mapa");
             else if(!mundito[myPlayer.pos[0]+3].matrix[myPlayer.pos[1]][0].isBlocked && !mundito[myPlayer.pos[0]+3].matrix[myPlayer.pos[1]][1].isBlocked){ //Antes no estaba el &&
@@ -565,7 +565,7 @@ public class GameGUI extends JFrame{
 
     void PlayerRight(){
         //Comprobamos si cambiará de mapa
-        if (myPlayer.pos[1]==(numCeldas[0]-1)){
+        if (myPlayer.pos[1]==(world.getMaps()[myPlayer.pos[0]].getCellWidth()-1)){
             if(myPlayer.pos[0]==2 || myPlayer.pos[0]==5|| myPlayer.pos[0]==8)//comprobamos que hay mas mapas
                 Consola.setText("PlayerUP(): Llegó al límite derecho del mundo");
             else if(!mundito[myPlayer.pos[0]+1].matrix[0][myPlayer.pos[2]].isBlocked){
@@ -601,10 +601,10 @@ public class GameGUI extends JFrame{
         if (myPlayer.pos[1]==0){
             if(myPlayer.pos[0]==0 || myPlayer.pos[0]==3|| myPlayer.pos[0]==6)//Se mira si hay otro mapa
                 Consola.setText("PlayerUP(): Llegó al límite inzquierdo del mundo");
-            else if(!mundito[myPlayer.pos[0]-1].matrix[(numCeldas[0]-1)][myPlayer.pos[2]].isBlocked){
+            else if(!mundito[myPlayer.pos[0]-1].matrix[(world.getMaps()[myPlayer.pos[0]].getCellWidth()-1)][myPlayer.pos[2]].isBlocked){
                 //				//cambiamos de mapa
                 myPlayer.pos[0]-=1;
-                myPlayer.pos[1]=(numCeldas[1]-1);
+                myPlayer.pos[1]=(world.getMaps()[myPlayer.pos[0]].getCellHeight()-1);
                 Consola.setText("Estamos en el mapa:" + myPlayer.pos[0]);
                 jContentPane.getGraphics().clearRect(180,20,200,200);
                 mundito[myPlayer.pos[0]].drawMap(

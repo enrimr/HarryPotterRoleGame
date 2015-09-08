@@ -51,4 +51,21 @@ public class Map {
         }
         g.drawRect(x, y, this.pixelWidth, this.pixelHeight);
     }
+
+    public int getCellWidth() {
+        return cellWidth;
+    }
+
+    public int getCellHeight() {
+        return cellHeight;
+    }
+
+    public int getPixelWidth() {
+        return pixelWidth;
+    }
+
+    public int getPixelHeight() {
+        return pixelHeight;
+    }
+
 }
