@@ -7,14 +7,15 @@ import javax.jms.*;
  */
 public     //Hilo que controla los combates
 class Combat extends Thread {
+    Player myPlayer = Game.getInstance().getMyPlayer();
     boolean quierehuir=false; //variable que indicara si un personaje ha huido
     //procedimiento que se ejecuta al ganar un combate
     void ganarcombate(){
         //Se aumenta la experiencia y el nivel si fuese oportuno
-        MiJugador.experience+=5*jugadores[MiJugador.rivalID].level;
-        if (MiJugador.experience>50*MiJugador.level*MiJugador.level){
-            MiJugador.level++;
-            MiJugador.experience=0;
+        myPlayer.experience+=5*jugadores[myPlayer.enemyId].level;
+        if (myPlayer.experience>50*myPlayer.level*myPlayer.level){
+            myPlayer.level++;
+            myPlayer.experience=0;
         }
         //borramos los controles de la batalla
         guion1.setVisible(false);
@@ -32,25 +33,25 @@ class Combat extends Thread {
         accioncombate.setVisible(false);
 
         //repintamos el mapa para poder seguir jugando por donde habiamo salido
-        mundito[MiJugador.pos[0]].DrawMap(jContentPane.getGraphics(), 180, 20);
+        World.getInstance().getMaps()[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
         DibujarDemasJugadores();
-        MiJugador.DrawPlayer(jContentPane.getGraphics());
-        Exp.setText("Exp: "+MiJugador.experience);
-        Nivel.setText("Nivel: "+MiJugador.level);
+        myPlayer.drawPlayer(myPlayer.getSprite());
+        Exp.setText("Exp: "+myPlayer.experience);
+        Nivel.setText("Nivel: "+Game.getInstance().getMyPlayer().level);
 
     }
     //procedimiento que se ejecuta al perder un combate
     void perdercombate(){
         //se regresa al territorio del bando  oportuno y se le restaura la vida
-        if (MiJugador.bando==0){
-            MiJugador.pos[0]=3;
+        if (myPlayer.getFaction()==0){
+            myPlayer.pos[0]=3;
         }
         else{
-            MiJugador.pos[0]=5;
+            myPlayer.pos[0]=5;
         }
-        MiJugador.pos[1]=7;
-        MiJugador.pos[2]=7;
-        MiJugador.health=100;
+        myPlayer.pos[1]=7;
+        myPlayer.pos[2]=7;
+        myPlayer.health=100;
         //borramos los campos de la batalla
         guion1.setVisible(false);
         guion2.setVisible(false);

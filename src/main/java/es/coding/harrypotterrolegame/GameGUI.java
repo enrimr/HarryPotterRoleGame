@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.util.Properties;
 import java.util.Random;
 
 //Añadido
@@ -30,7 +31,13 @@ public class GameGUI extends JFrame{
     //int nummap=9; //numeros de mapas del juego
     String [] datos = new String[3]; //variable usada para pasar datos a la hora combatir
 
+    Properties config = new Properties();
 
+    private static GameGUI ourInstance = new GameGUI();
+
+    public static GameGUI getInstance() {
+        return ourInstance;
+    }
 
     //muestra el mapa y la posicion del jugador
     public void drawPlayerPos(){
@@ -1516,7 +1523,7 @@ public class GameGUI extends JFrame{
         myPlayer.drawPlayer(jContentPane.getGraphics());
         conexionTopic.sendMessage("pos-"+ myPlayer.getName()+"*"+"0"+ myPlayer.pos[0]+"0"+ myPlayer.pos[1]+"0"+ myPlayer.pos[2]);
         //conexionTopic.SendMessage("accion-"+myPlayer.enemy+"*"+6);
-        Vida.setText("Vida: "+ myPlayer.health);
+        Vida.setText("Vida: " + myPlayer.health);
 
         creatures[myPlayer.enemyId].isFighting = false;
         myPlayer.isFighting = false;
@@ -1651,7 +1658,7 @@ public class GameGUI extends JFrame{
                             case 1://Tomas pocion y aumenta tu vida
                                 if(myPlayer.getPotions() > 0){
                                     myPlayer.health+=10;
-                                    Vida.setText("Vida: "+ myPlayer.health);
+                                    Vida.setText("Vida: " + myPlayer.health);
                                     //myPlayer.objetos[1]--;
                                     myPlayer.setPotions(myPlayer.getPotions()-1);
                                 }
@@ -1710,7 +1717,7 @@ public class GameGUI extends JFrame{
                         if (creatures[myPlayer.enemyId].health > 0){
                             Consola.setText("Te han atacado");
                             myPlayer.health-=(creatures[myPlayer.enemyId].level+5);
-                            Vida.setText("Salud: "+ myPlayer.health);
+                            Vida.setText("Salud: " + myPlayer.health);
 
                         }
                         //sino le queda vida ganas
@@ -1778,7 +1785,7 @@ public class GameGUI extends JFrame{
                                     case 1://si es uno bebes pocion siempre que tengas
                                         if(myPlayer.getPotions() > 0){
                                             myPlayer.health+=10;
-                                            Vida.setText("Vida: "+ myPlayer.health);
+                                            Vida.setText("Vida: " + myPlayer.health);
                                             //myPlayer.objetos[1]--;
                                             myPlayer.setPotions(myPlayer.getPotions()-1);
                                         }

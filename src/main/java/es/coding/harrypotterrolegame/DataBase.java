@@ -102,7 +102,7 @@ public class DataBase extends Thread { // class BaseDatos extends Runnable,
                                         objeto3num,
                                         objeto4num,
                                         expnum));
-                                
+
                                 //mostramos en la pantalla algunos datos relevantes
                                 Vida.setText("Vida: "+ vidanum);
                                 Nivel.setText("Nivel: "+ nivelnum);
