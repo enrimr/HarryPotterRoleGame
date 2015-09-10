@@ -12,7 +12,7 @@ class Combat extends Thread {
     //procedimiento que se ejecuta al ganar un combate
     void ganarcombate(){
         //Se aumenta la experiencia y el nivel si fuese oportuno
-        myPlayer.experience+=5*jugadores[myPlayer.enemyId].level;
+        myPlayer.experience+=5*Game.getInstance().gamePlayers[myPlayer.enemyId].level;
         if (myPlayer.experience>50*myPlayer.level*myPlayer.level){
             myPlayer.level++;
             myPlayer.experience=0;
@@ -67,24 +67,24 @@ class Combat extends Thread {
         vida_rival.setVisible(false);
         accioncombate.setVisible(false);
         //repintamos el mapa para continuar la aventura
-        mundito[MiJugador.pos[0]].DrawMap(jContentPane.getGraphics(), 180, 20);
+        World.getInstance().getMaps()[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
         DibujarDemasJugadores();
-        MiJugador.DrawPlayer(jContentPane.getGraphics());
+        myPlayer.drawPlayer(jContentPane.getGraphics());
         //mando la posicion para que los demas la actualizen
-        conexionTopic.SendMessage("pos-"+MiJugador.name+"*"+"0"+MiJugador.pos[0]+"0"+MiJugador.pos[1]+"0"+MiJugador.pos[2]);
+        conexionTopic.SendMessage("pos-"+myPlayer.getName()+"*"+"0"+myPlayer.pos[0]+"0"+myPlayer.pos[1]+"0"+myPlayer.pos[2]);
         //mando a mi enemy que he perdido el combate
-        conexionTopic.SendMessage("accion-"+MiJugador.rival+"*"+6);
-        Vida.setText("Vida: "+MiJugador.health);
+        conexionTopic.SendMessage("accion-"+myPlayer.enemy+"*"+6);
+        Vida.setText("Vida: "+myPlayer.health);
 
 
     }
     //procedimiento que indica que yo he huido
     void huyocombate(){
         //aumentamos la experiencia y el nivel si fuese necesario
-        MiJugador.experience+=2*jugadores[MiJugador.rivalID].level;
-        if (MiJugador.experience>50*MiJugador.level*MiJugador.level){
-            MiJugador.level++;
-            MiJugador.experience=0;
+        myPlayer.experience+=2*Game.getInstance().gamePlayers[myPlayer.enemyId].level;
+        if (myPlayer.experience>50*myPlayer.level*myPlayer.level){
+            myPlayer.level++;
+            myPlayer.experience=0;
         }
         //borramos los componentes de la batalla
         guion1.setVisible(false);
@@ -102,11 +102,11 @@ class Combat extends Thread {
         accioncombate.setVisible(false);
 
         //volvemos a pintar el mapa
-        mundito[MiJugador.pos[0]].DrawMap(jContentPane.getGraphics(), 180, 20);
+        World.getInstance().getMaps()[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
         DibujarDemasJugadores();
-        MiJugador.DrawPlayer(jContentPane.getGraphics());
-        Exp.setText("Exp: "+MiJugador.experience);
-        Nivel.setText("Nivel: "+MiJugador.level);
+        myPlayer.drawPlayer(jContentPane.getGraphics());
+        Exp.setText("Exp: "+myPlayer.experience);
+        Nivel.setText("Nivel: "+myPlayer.level);
 
     }
     //cuerpo de tratamiento de los mensajes del combate
@@ -128,16 +128,16 @@ class Combat extends Thread {
                             String Nombre1=textoRecibido.substring(indice+1, textoRecibido.indexOf("*"));
                             String Nombre2=textoRecibido.substring(textoRecibido.indexOf("*")+1, textoRecibido.indexOf("$"));
                             //si soy yo me pongo luchando y le mando mis datos a mi oponente (bando, nivel, vida) y entro en combate
-                            if ((Nombre1.equals(MiJugador.name))||(Nombre2.equals(MiJugador.name))){
-                                if((Nombre1.equals(MiJugador.name))&&(!MiJugador.fighting)){
-                                    MiJugador.fighting = true;
+                            if ((Nombre1.equals(myPlayer.getName()))||(Nombre2.equals(myPlayer.getName()))){
+                                if((Nombre1.equals(myPlayer.getName()))&&(!myPlayer.isFighting)){
+                                    myPlayer.isFighting = true;
                                     String Bando=textoRecibido.substring(textoRecibido.indexOf("$")+1, textoRecibido.indexOf("$")+2);
                                     String Nivel=textoRecibido.substring(textoRecibido.indexOf("$")+2, textoRecibido.indexOf("%"));
                                     String Vida =textoRecibido.substring(textoRecibido.indexOf("%")+1);
                                     datos[0]=Bando;
                                     datos[1]=Nivel;
                                     datos[2]=Vida;
-                                    conexionTopic.SendMessage("combate-"+Nombre2+"*"+MiJugador.name+"$"+MiJugador.bando+MiJugador.level+"%"+MiJugador.health);
+                                    conexionTopic.SendMessage("combate-"+Nombre2+"*"+myPlayer.getName()+"$"+myPlayer.getFaction()+myPlayer.level+"%"+myPlayer.health);
                                     combate(Nombre2);
                                 }
                                 //else combate(Nombre1);
@@ -151,7 +151,7 @@ class Combat extends Thread {
                                 indice = textoRecibido.indexOf("-");
                                 //si mi nombre es el del mensaje es que la accion es para mi
                                 String nombre=textoRecibido.substring(indice+1,textoRecibido.indexOf("*"));
-                                if (MiJugador.name.equals(nombre)){
+                                if (myPlayer.getName().equals(nombre)){
                                     indice = textoRecibido.indexOf("*");
                                     //traduzco a entero la eleccion
                                     String eleccion=textoRecibido.substring(indice+1);
@@ -162,29 +162,29 @@ class Combat extends Thread {
                                     switch(elecnum){
                                         case 0://si es cero es que me ha atacado y disminuyo mi vida
                                             Consola.setText("Te han atacado");
-                                            MiJugador.health-=(jugadores[MiJugador.rivalID].level+5);
-                                            Vida.setText("Salud: "+MiJugador.health);
+                                            myPlayer.health-=(Game.getInstance().gamePlayers[myPlayer.enemyId].level+5);
+                                            Vida.setText("Salud: "+myPlayer.health);
                                             break;
                                         case 3://si te lanza una maldicion imperdonable me mata al isntante
                                             Consola.setText("Has sufrido una maldición imperdonable!");
-                                            MiJugador.health=0;
+                                            myPlayer.health=0;
                                             break;
                                         case 4://si es 4 es que quiere hiur
                                             Consola.setText("Intenta huir del combate!");
                                             quierehuir=true;
                                             break;
                                         case 6://si es 6 esta informandome que he ganado el combate
-                                            MiJugador.fighting=false;
+                                            myPlayer.isFighting=false;
                                             ganarcombate();
                                             break;
                                     }
                                     if (quierehuir){//si quiere huir llamo a huyocombate
                                         huyocombate();
-                                        MiJugador.fighting=false;
+                                        myPlayer.isFighting=false;
                                     }
-                                    else if(MiJugador.health<=0){ //si yo perdi llamo a perder combate para avisarle
+                                    else if(myPlayer.health<=0){ //si yo perdi llamo a perder combate para avisarle
                                         perdercombate();
-                                        MiJugador.fighting=false;
+                                        myPlayer.isFighting=false;
                                     }
                                 }
                             }
