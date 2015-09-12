@@ -25,7 +25,7 @@ public class Chateo extends Thread {
                             indice = textoRecibido.indexOf("*");
                             String mensaje =textoRecibido.substring(indice+1);
                             String manda = textoRecibido.substring(textoRecibido.indexOf("-")+1, textoRecibido.indexOf("*"));
-                            Consola.setText(manda+": "+mensaje+"\n"+Consola.getText());
+                            GameGUI.getInstance().console.setText(manda+": "+mensaje+"\n"+Consola.getText());
                             ConsolaComandos.setText("");
                         }
                     }

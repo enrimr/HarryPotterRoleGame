@@ -358,7 +358,7 @@ public class GameGUI extends JFrame{
                     askProfessor(i);
                 }
                 else{
-                    Consola.setText("No puedes hablar con este profesor no es de tu casa");
+                    console.setText("No puedes hablar con este profesor no es de tu casa");
                 }
 
             }
@@ -506,12 +506,12 @@ public class GameGUI extends JFrame{
         //Comprobamos si cambiará de mapa
         if (myPlayer.pos[2]==1){
             if(myPlayer.pos[0]==0 || myPlayer.pos[0]==1|| myPlayer.pos[0]==2)//comprobamos que no nos chocamos
-                Consola.setText("PlayerUP(): Llegó al límite superior de un mapa");
+                console.setText("PlayerUP(): Llegó al límite superior de un mapa");
             else if(!mundito[myPlayer.pos[0]-3].matrix[myPlayer.pos[1]][myPlayer.pos[2]].isBlocked){
                 //cambiamos de mapa
                 myPlayer.pos[0]-=3;
                 myPlayer.pos[2]=(world.getMaps()[myPlayer.pos[0]].getCellHeight()-1);//eSTABA EN -1
-                Consola.setText("Estamos en el mapa:" + myPlayer.pos[0]);
+                console.setText("Estamos en el mapa:" + myPlayer.pos[0]);
                 jContentPane.getGraphics().clearRect(180,20,200,200);
                 mundito[myPlayer.pos[0]].drawMap(
                         jContentPane.getGraphics(),
@@ -522,18 +522,19 @@ public class GameGUI extends JFrame{
                 drawPlayerPos();
             }
             //si hay un obstaculo en el otro mapa no puedes pasar
-            else {Consola.setText("PlayerUP(): hay un obstáculo en el otro mapa");}
+            else {
+                console.setText("PlayerUP(): hay un obstáculo en el otro mapa");}
         }
         // Si no hay obstáculo nos movemos
         else if (!mundito[myPlayer.pos[0]].matrix[myPlayer.pos[1]][myPlayer.pos[2]-1].isBlocked){
-            Consola.setText("");
+            console.setText("");
             myPlayer.recoverLayer(jContentPane.getGraphics());//recoverLayer();
             myPlayer.pos[2]-=1;
             myPlayer.drawPlayer(jContentPane.getGraphics());
             drawPlayerPos();
         }
         else {//sino decimos que nos chocamos
-            Consola.setText("PlayerUP(): Se chocó");
+            console.setText("PlayerUP(): Se chocó");
         }
     }
 
@@ -541,12 +542,12 @@ public class GameGUI extends JFrame{
         //Comprobamos si cambiará de mapa
         if ((myPlayer.pos[2])==(world.getMaps()[myPlayer.pos[0]].getCellHeight())-1){
             if(myPlayer.pos[0]==6 || myPlayer.pos[0]==7|| myPlayer.pos[0]==8)//comprobamos que no estamos en el limite
-                Consola.setText("PlayerUP(): Llegó al límite inferior de un mapa");
+                console.setText("PlayerUP(): Llegó al límite inferior de un mapa");
             else if(!mundito[myPlayer.pos[0]+3].matrix[myPlayer.pos[1]][0].isBlocked && !mundito[myPlayer.pos[0]+3].matrix[myPlayer.pos[1]][1].isBlocked){ //Antes no estaba el &&
                 //				Cambiamos de mapa
                 myPlayer.pos[0]+=3;
                 myPlayer.pos[2]=1;
-                Consola.setText("Estamos en el mapa:" + myPlayer.pos[0]);
+                console.setText("Estamos en el mapa:" + myPlayer.pos[0]);
                 jContentPane.getGraphics().clearRect(180,20,200,200);
                 mundito[myPlayer.pos[0]].drawMap(
                         jContentPane.getGraphics(),
@@ -556,30 +557,31 @@ public class GameGUI extends JFrame{
                 drawPlayerPos();
             }
             //			si hay un obstaculo en el otro mapa no puedes pasar
-            else {Consola.setText("PlayerDown(): hay un obstáculo en el otro mapa");}
+            else {
+                console.setText("PlayerDown(): hay un obstáculo en el otro mapa");}
         }
         //si no hay obstaculo nos movemos
         else if (!mundito[myPlayer.pos[0]].matrix[myPlayer.pos[1]][myPlayer.pos[2]+1].isBlocked){//Bedebia ser JugPos[2]+1
-            Consola.setText("");
+            console.setText("");
             myPlayer.recoverLayer(jContentPane.getGraphics());
             myPlayer.pos[2]+=1;
             myPlayer.drawPlayer(jContentPane.getGraphics());
             drawPlayerPos();
         }
         //sino decimos que nos chocamos
-        else Consola.setText("PlayerDown(): Se chocó");
+        else console.setText("PlayerDown(): Se chocó");
     }
 
     void PlayerRight(){
         //Comprobamos si cambiará de mapa
         if (myPlayer.pos[1]==(world.getMaps()[myPlayer.pos[0]].getCellWidth()-1)){
             if(myPlayer.pos[0]==2 || myPlayer.pos[0]==5|| myPlayer.pos[0]==8)//comprobamos que hay mas mapas
-                Consola.setText("PlayerUP(): Llegó al límite derecho del mundo");
+                console.setText("PlayerUP(): Llegó al límite derecho del mundo");
             else if(!mundito[myPlayer.pos[0]+1].matrix[0][myPlayer.pos[2]].isBlocked){
                 //Cambiamos de mapa
                 myPlayer.pos[0]+=1;
                 myPlayer.pos[1]=0;
-                Consola.setText("Estamos en el mapa:" + myPlayer.pos[0]);
+                console.setText("Estamos en el mapa:" + myPlayer.pos[0]);
                 jContentPane.getGraphics().clearRect(180,20,200,200);
                 mundito[myPlayer.pos[0]].drawMap(
                         jContentPane.getGraphics(),
@@ -588,31 +590,32 @@ public class GameGUI extends JFrame{
                 myPlayer.drawPlayer(jContentPane.getGraphics());
                 drawPlayerPos();
             }
-            else {Consola.setText("PlayerRight(): hay un obstáculo en el otro mapa");}
+            else {
+                console.setText("PlayerRight(): hay un obstáculo en el otro mapa");}
             // Comprobamos si puede ir a una mapa válido
 
         }//sin no hay obstaculo nos movemos
         else if (!mundito[myPlayer.pos[0]].matrix[myPlayer.pos[1]+1][myPlayer.pos[2]].isBlocked && !mundito[myPlayer.pos[0]].matrix[myPlayer.pos[1]+1][myPlayer.pos[2]+1].isBlocked) {//mIRAMOS LOS PIES
-            Consola.setText("");
+            console.setText("");
             myPlayer.recoverLayer(jContentPane.getGraphics());
             myPlayer.pos[1]+=1;
             myPlayer.drawPlayer(jContentPane.getGraphics());
             drawPlayerPos();
         }
         else//si hay obstaculo le decimos que ha chocado
-            Consola.setText("PlayerRight(): Se chocó");
+            console.setText("PlayerRight(): Se chocó");
     }
 
     void PlayerLeft(){
         //Comprobamos si cambiará de mapa
         if (myPlayer.pos[1]==0){
             if(myPlayer.pos[0]==0 || myPlayer.pos[0]==3|| myPlayer.pos[0]==6)//Se mira si hay otro mapa
-                Consola.setText("PlayerUP(): Llegó al límite inzquierdo del mundo");
+                console.setText("PlayerUP(): Llegó al límite inzquierdo del mundo");
             else if(!mundito[myPlayer.pos[0]-1].matrix[(world.getMaps()[myPlayer.pos[0]].getCellWidth()-1)][myPlayer.pos[2]].isBlocked){
                 //				//cambiamos de mapa
                 myPlayer.pos[0]-=1;
                 myPlayer.pos[1]=(world.getMaps()[myPlayer.pos[0]].getCellHeight()-1);
-                Consola.setText("Estamos en el mapa:" + myPlayer.pos[0]);
+                console.setText("Estamos en el mapa:" + myPlayer.pos[0]);
                 jContentPane.getGraphics().clearRect(180,20,200,200);
                 mundito[myPlayer.pos[0]].drawMap(
                         jContentPane.getGraphics(),
@@ -621,18 +624,19 @@ public class GameGUI extends JFrame{
                 myPlayer.drawPlayer(jContentPane.getGraphics());
                 drawPlayerPos();
             }
-            else {Consola.setText("PlayerLeft(): hay un obstáculo en el otro mapa");}
+            else {
+                console.setText("PlayerLeft(): hay un obstáculo en el otro mapa");}
             // Comprobamos si puede ir a una mapa válido
 
         }//si no hay obstaculo nos movemos
         else if (!mundito[myPlayer.pos[0]].matrix[myPlayer.pos[1]-1][myPlayer.pos[2]].isBlocked && !mundito[myPlayer.pos[0]].matrix[myPlayer.pos[1]-1][myPlayer.pos[2]-1].isBlocked){
-            Consola.setText("");
+            console.setText("");
             myPlayer.recoverLayer(jContentPane.getGraphics());
             myPlayer.pos[1]-=1;
             myPlayer.drawPlayer(jContentPane.getGraphics());
             drawPlayerPos();
         }
-        else Consola.setText("PlayerLeft(): Se chocó");//sino le decimos que no puede continuar
+        else console.setText("PlayerLeft(): Se chocó");//sino le decimos que no puede continuar
     }
 
     private static final long serialVersionUID = 1L;
@@ -649,7 +653,7 @@ public class GameGUI extends JFrame{
     private JButton ButDown = null;
     private JButton ButLeft = null;
     private JTextField ConsolaComandos = null;
-    private JEditorPane Consola = null;
+    private JEditorPane console = null;
 
     private JButton jButton3 = null;  //  @jve:decl-index=0:visual-constraint="332,46"
 
@@ -821,7 +825,7 @@ public class GameGUI extends JFrame{
             jContentPane.add(getButDown(), null);
             jContentPane.add(getButLeft(), null);
             jContentPane.add(getConsolaComandos(), null);
-            jContentPane.add(getConsola(), null);
+            jContentPane.add(getConsole(), null);
             jContentPane.add(getEnviar(), null);
             jContentPane.add(getJButton32(), null);
             jContentPane.add(nombre1, null);
@@ -1202,19 +1206,19 @@ public class GameGUI extends JFrame{
     }
 
     /**
-     * This method initializes Consola
+     * This method initializes console
      *
      * @return javax.swing.JEditorPane
      */
     //consola donde se imprime los mensajes del chat
-    private JEditorPane getConsola() {
-        if (Consola == null) {
-            Consola = new JEditorPane();
-            Consola.setBounds(new Rectangle(23, 509, 607, 65));
-            Consola.setFont(new Font("Dialog", Font.PLAIN, 12));
-            Consola.setEditable(false);
+    private JEditorPane getConsole() {
+        if (console == null) {
+            console = new JEditorPane();
+            console.setBounds(new Rectangle(23, 509, 607, 65));
+            console.setFont(new Font("Dialog", Font.PLAIN, 12));
+            console.setEditable(false);
         }
-        return Consola;
+        return console;
     }
 
     /**
@@ -1285,7 +1289,7 @@ public class GameGUI extends JFrame{
                     nombre.setVisible(false);
                     nombre1.setVisible(false);
                     jButton2.setVisible(false);
-                    Consola.setText("conectando");
+                    console.setText("conectando");
                     conexionTopic.sendMessage("bd-"+nombre.getText());
                     enlace = new DataBase();
                     enlace.start();//lanzamos el hilo que recibe los datos de la bd
@@ -1568,7 +1572,7 @@ public class GameGUI extends JFrame{
 
     //procedimiento que te da el objeto si aciertas la pregunta
     void acertar(){
-        Consola.setText("Has acertado la pregunta");
+        console.setText("Has acertado la pregunta");
 
         Random randomGenerator = new Random();
 
@@ -1578,12 +1582,12 @@ public class GameGUI extends JFrame{
             if (azar == 0){
                 myPlayer.setPotions(myPlayer.getPotions()+1);
                 //myPlayer.objetos[1]++;
-                Consola.setText(Consola.getText()+" Ganas una pocion");
+                console.setText(console.getText()+" Ganas una pocion");
             }
             else{
                 myPlayer.setPoison(myPlayer.getPoison()+1);
                 //myPlayer.objetos[2]++;
-                Consola.setText(Consola.getText()+" Ganas un veneno");
+                console.setText(console.getText()+" Ganas un veneno");
             }
         }
         else{
@@ -1591,10 +1595,10 @@ public class GameGUI extends JFrame{
             if (myPlayer.level>10){
                 myPlayer.setUnforgivableCurses(myPlayer.getUnforgivableCurses()+1);
                 //myPlayer.objetos[3]++;
-                Consola.setText(Consola.getText()+" Ganas maldición");
+                console.setText(console.getText()+" Ganas maldición");
             }
             else{
-                Consola.setText(Consola.getText()+" No tienes el poder suficiente para poseer una maldición");
+                console.setText(console.getText()+" No tienes el poder suficiente para poseer una maldición");
             }
         }
 
@@ -1618,7 +1622,7 @@ public class GameGUI extends JFrame{
     }
     //	procedimiento si fallas la pregunta
     void fallar(){
-        Consola.setText("Has fallado la pregunta");
+        console.setText("Has fallado la pregunta");
 
         accioncombate.setVisible(false);
         opcion1.setVisible(false);
@@ -1663,7 +1667,7 @@ public class GameGUI extends JFrame{
                                     myPlayer.setPotions(myPlayer.getPotions()-1);
                                 }
                                 else{
-                                    Consola.setText("No te quedan pociones");
+                                    console.setText("No te quedan pociones");
                                 }
                                 break;
 
@@ -1675,7 +1679,7 @@ public class GameGUI extends JFrame{
                                     myPlayer.setPoison(myPlayer.getPoison()-1);
                                 }
                                 else{
-                                    Consola.setText("No te queda veneno");
+                                    console.setText("No te queda veneno");
                                 }
                                 break;
                             case 3://Maldicion imperdonable
@@ -1685,7 +1689,7 @@ public class GameGUI extends JFrame{
                                     myPlayer.setUnforgivableCurses(myPlayer.getUnforgivableCurses()-1);
                                 }
                                 else{
-                                    Consola.setText("No tienes poder para lanzar la maldición");
+                                    console.setText("No tienes poder para lanzar la maldición");
                                 }
                                 break;
                             case 4:
@@ -1715,7 +1719,7 @@ public class GameGUI extends JFrame{
                         //ataque de la criatura
                         System.out.println("Acción enviada: "+cursor);
                         if (creatures[myPlayer.enemyId].health > 0){
-                            Consola.setText("Te han atacado");
+                            console.setText("Te han atacado");
                             myPlayer.health-=(creatures[myPlayer.enemyId].level+5);
                             Vida.setText("Salud: " + myPlayer.health);
 
@@ -1790,7 +1794,7 @@ public class GameGUI extends JFrame{
                                             myPlayer.setPotions(myPlayer.getPotions()-1);
                                         }
                                         else{
-                                            Consola.setText("No te quedan pociones");
+                                            console.setText("No te quedan pociones");
                                         }
                                         break;
 
@@ -1802,7 +1806,7 @@ public class GameGUI extends JFrame{
                                             myPlayer.setPoison(myPlayer.getPoison()-1);
                                         }
                                         else{
-                                            Consola.setText("No te queda veneno");
+                                            console.setText("No te queda veneno");
                                         }
                                         break;
                                     case 3://lanzastes Maldicion imperdonable si puedes
@@ -1812,7 +1816,7 @@ public class GameGUI extends JFrame{
                                             myPlayer.setUnforgivableCurses(myPlayer.getUnforgivableCurses()-1);
                                         }
                                         else{
-                                            Consola.setText("No tienes poder para lanzar la maldición");
+                                            console.setText("No tienes poder para lanzar la maldición");
                                         }
                                         break;
                                     case 4:
@@ -1841,7 +1845,7 @@ public class GameGUI extends JFrame{
                                 }
                                 System.out.println("Acción enviada: "+cursor);
                             }
-                            else Consola.setText("No puedes enviar una maldicion imperdonable");
+                            else console.setText("No puedes enviar una maldicion imperdonable");
                         }
                     }
                 }
