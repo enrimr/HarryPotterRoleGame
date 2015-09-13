@@ -99,7 +99,7 @@ public class GameGUI extends JFrame{
                 exp_rival.setVisible(true);
 
                 //Volvemos a pintar el fondo de la batalla y a los game.gamePlayers combatientes
-                drawBackground("./imagenes/fondos/duelo.gif");
+                drawBackground("./images/background/duelo.gif");
                 gamePlayers[myPlayer.enemyId].drawPlayer(jContentPane.getGraphics(), 2, 300, 50);
                 myPlayer.drawPlayer(jContentPane.getGraphics(), 1, 70, 70);
             }
@@ -232,7 +232,7 @@ public class GameGUI extends JFrame{
                 Integer.parseInt(Configuration.getInstance().getConfig("y")),
                 world.getMaps()[myPlayer.pos[0]].getPixelWidth(),
                 world.getMaps()[myPlayer.pos[0]].getPixelHeight());
-        drawBackground("./imagenes/fondos/duelo.gif");
+        drawBackground("./images/background/duelo.gif");
         //activamos los recursos del combate
         cursor=0;
         accioncombate.setVisible(true);
