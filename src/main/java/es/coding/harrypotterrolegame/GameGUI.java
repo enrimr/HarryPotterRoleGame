@@ -31,7 +31,7 @@ public class GameGUI extends JFrame{
     //int nummap=9; //numeros de mapas del juego
     String [] datos = new String[3]; //variable usada para pasar datos a la hora combatir
 
-    Properties config = new Properties();
+    Properties properties = new Properties();
 
     private static GameGUI ourInstance = new GameGUI();
 
@@ -404,10 +404,10 @@ public class GameGUI extends JFrame{
                             int indice = textoRecibido.indexOf("conectar");
                             if(indice != -1){
                                 indice = textoRecibido.indexOf("-");
-                                String Nombre=textoRecibido.substring(indice+1, textoRecibido.indexOf("*"));
+                                String receivedName = textoRecibido.substring(indice+1, textoRecibido.indexOf("*"));
                                 //Comprobamos que el mensaje no lo haya enviado yo
-                                if (!myPlayer.getName().equals(Nombre)){
-                                    if(!esta(Nombre)){
+                                if (!myPlayer.getName().equals(receivedName)){
+                                    if(!esta(receivedName)){
                                         //si no soy yo y no esta ya agregado obtengo sus datos
                                         String Mapa= textoRecibido.substring(textoRecibido.indexOf("*")+1,textoRecibido.indexOf("*")+3);
                                         String X= textoRecibido.substring(textoRecibido.indexOf("*")+3,textoRecibido.indexOf("*")+5);
@@ -423,7 +423,7 @@ public class GameGUI extends JFrame{
                                         char []r3=img.toCharArray();
                                         int imgnum= (int)r3[0]*10+(int)r3[1]-528;
                                         //creamos en la posicion adecuado al nuevo player
-                                        gamePlayers[game.gamePlayersLength] = new Player(Nombre, coordMapa, coordX, coordY, imgnum);
+                                        gamePlayers[game.gamePlayersLength] = new Player(receivedName, coordMapa, coordX, coordY, imgnum);
                                         System.out.println("Prueba: "+gamePlayers[game.gamePlayersLength].getName());
                                         String charX="0";
                                         String charY="0";
@@ -643,7 +643,7 @@ public class GameGUI extends JFrame{
 
     private JPanel jContentPane = null;
 
-    private JButton jButton = null;
+    JButton jButton = null;
 
     private JLabel MapNum = null;
     private JButton jButton1 = null;
@@ -652,15 +652,15 @@ public class GameGUI extends JFrame{
     private JButton ButRight = null;
     private JButton ButDown = null;
     private JButton ButLeft = null;
-    private JTextField ConsolaComandos = null;
-    private JEditorPane console = null;
+    JTextField consoleCommands = null;
+    JEditorPane console = null;
 
     private JButton jButton3 = null;  //  @jve:decl-index=0:visual-constraint="332,46"
 
     private JButton Enviar = null;
     private JButton jButton32 = null;
     private JLabel nombre1 = null;
-    private JTextField nombre = null;
+    JTextField nameInput = null;
     /**
      * This is the default constructor
      */
@@ -731,18 +731,18 @@ public class GameGUI extends JFrame{
             vida_rival.setBounds(new Rectangle(474, 374, 75, 17));
             vida_rival.setText("");
             vida_rival.setVisible(false);
-            Exp = new JLabel();
-            Exp.setBounds(new Rectangle(23, 279, 90, 16));
-            Exp.setText("");
-            Exp.setVisible(false);
-            Nivel = new JLabel();
-            Nivel.setBounds(new Rectangle(23, 255, 89, 15));
-            Nivel.setText("");
-            Nivel.setVisible(false);
-            Vida = new JLabel();
-            Vida.setBounds(new Rectangle(23, 302, 90, 15));
-            Vida.setText("");
-            Vida.setVisible(false);
+            experience = new JLabel();
+            experience.setBounds(new Rectangle(23, 279, 90, 16));
+            experience.setText("");
+            experience.setVisible(false);
+            level = new JLabel();
+            level.setBounds(new Rectangle(23, 255, 89, 15));
+            level.setText("");
+            level.setVisible(false);
+            life = new JLabel();
+            life.setBounds(new Rectangle(23, 302, 90, 15));
+            life.setText("");
+            life.setVisible(false);
             guion5 = new JLabel();
             guion5.setBounds(new Rectangle(241, 463, 22, 16));
             guion5.setText(">>>");
@@ -824,12 +824,12 @@ public class GameGUI extends JFrame{
             jContentPane.add(getButRight(), null);
             jContentPane.add(getButDown(), null);
             jContentPane.add(getButLeft(), null);
-            jContentPane.add(getConsolaComandos(), null);
+            jContentPane.add(getConsoleCommands(), null);
             jContentPane.add(getConsole(), null);
             jContentPane.add(getEnviar(), null);
             jContentPane.add(getJButton32(), null);
             jContentPane.add(nombre1, null);
-            jContentPane.add(getNombre(), null);
+            jContentPane.add(getNameInput(), null);
             jContentPane.add(getJButton2(), null);
             jContentPane.add(getNombrereg(), null);
             jContentPane.add(lnombrereg, null);
@@ -852,10 +852,10 @@ public class GameGUI extends JFrame{
             jContentPane.add(guion4, null);
             jContentPane.add(huir, null);
             jContentPane.add(guion5, null);
-            jContentPane.add(Vida, null);
+            jContentPane.add(life, null);
             jContentPane.add(getAccioncombate(), null);
-            jContentPane.add(Nivel, null);
-            jContentPane.add(Exp, null);
+            jContentPane.add(level, null);
+            jContentPane.add(experience, null);
             jContentPane.add(vida_rival, null);
             jContentPane.add(exp_rival, null);
             jContentPane.add(opcion1, null);
@@ -973,9 +973,9 @@ public class GameGUI extends JFrame{
                     if(myPlayer.getSprite()>9)charimg="";
                     //mandar mis datos a los demas jugadores porque me conecte
                     conexionTopic.sendMessage("conectar-"+ myPlayer.getName()+"*"+charMapa+ myPlayer.pos[0]+charX+ myPlayer.pos[1]+charY+ myPlayer.pos[2]+charimg+ myPlayer.getSprite());
-                    Vida.setVisible(true);
-                    Exp.setVisible(true);
-                    Nivel.setVisible(true);
+                    life.setVisible(true);
+                    experience.setVisible(true);
+                    level.setVisible(true);
 
 
                 }
@@ -1197,12 +1197,12 @@ public class GameGUI extends JFrame{
      * @return javax.swing.JTextField
      */
     //consola donde se escribe los mensajes a mandar
-    private JTextField getConsolaComandos() {
-        if (ConsolaComandos == null) {
-            ConsolaComandos = new JTextField();
-            ConsolaComandos.setBounds(new Rectangle(22, 579, 519, 19));
+    private JTextField getConsoleCommands() {
+        if (consoleCommands == null) {
+            consoleCommands = new JTextField();
+            consoleCommands.setBounds(new Rectangle(22, 579, 519, 19));
         }
-        return ConsolaComandos;
+        return consoleCommands;
     }
 
     /**
@@ -1235,7 +1235,7 @@ public class GameGUI extends JFrame{
             Enviar.setText("Enviar");
             Enviar.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseClicked(java.awt.event.MouseEvent e) {
-                    conexionTopic.sendMessage("chat-"+ myPlayer.getName()+"*"+ConsolaComandos.getText());
+                    conexionTopic.sendMessage("chat-"+ myPlayer.getName()+"*"+consoleCommands.getText());
                 }
             });
         }
@@ -1270,10 +1270,10 @@ public class GameGUI extends JFrame{
     private JLabel guion4 = null;
     private JLabel huir = null;
     private JLabel guion5 = null;
-    private JLabel Vida = null;
+    JLabel life = null;
     private JButton accioncombate = null;
-    private JLabel Nivel = null;
-    private JLabel Exp = null;
+    JLabel level = null;
+    JLabel experience = null;
     private JLabel vida_rival = null;
     private JLabel exp_rival = null;
     private JButton getJButton32() {
@@ -1286,11 +1286,11 @@ public class GameGUI extends JFrame{
                     conexionTopic = new ConnectionManager();
                     conexionTopic.startConnection();//iniciamos la coneccion
                     jButton32.setVisible(false);
-                    nombre.setVisible(false);
+                    nameInput.setVisible(false);
                     nombre1.setVisible(false);
                     jButton2.setVisible(false);
                     console.setText("conectando");
-                    conexionTopic.sendMessage("bd-"+nombre.getText());
+                    conexionTopic.sendMessage("bd-"+nameInput.getText());
                     enlace = new DataBase();
                     enlace.start();//lanzamos el hilo que recibe los datos de la bd
                 }
@@ -1304,12 +1304,12 @@ public class GameGUI extends JFrame{
      *
      * @return javax.swing.JTextField
      */
-    private JTextField getNombre() {
-        if (nombre == null) {
-            nombre = new JTextField();
-            nombre.setBounds(new Rectangle(300, 142, 108, 22));
+    private JTextField getNameInput() {
+        if (nameInput == null) {
+            nameInput = new JTextField();
+            nameInput.setBounds(new Rectangle(300, 142, 108, 22));
         }
-        return nombre;
+        return nameInput;
     }
 
     /**
@@ -1326,7 +1326,7 @@ public class GameGUI extends JFrame{
             jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseClicked(java.awt.event.MouseEvent e) {
                     jButton32.setVisible(false);
-                    nombre.setVisible(false);
+                    nameInput.setVisible(false);
                     nombre1.setVisible(false);
                     jButton2.setVisible(false);
 
@@ -1471,7 +1471,7 @@ public class GameGUI extends JFrame{
                     conexionTopic.sendMessage("newbd-"+nombrereg.getText()+"*"+sexoreg.getSelectedIndex()+bandoreg.getSelectedIndex()+casareg.getSelectedIndex()+imagenes_jug[casareg.getSelectedIndex()][sexoreg.getSelectedIndex()]);
 
                     jButton32.setVisible(true);
-                    nombre.setVisible(true);
+                    nameInput.setVisible(true);
                     nombre1.setVisible(true);
                     jButton2.setVisible(true);
 
@@ -1527,7 +1527,7 @@ public class GameGUI extends JFrame{
         myPlayer.drawPlayer(jContentPane.getGraphics());
         conexionTopic.sendMessage("pos-"+ myPlayer.getName()+"*"+"0"+ myPlayer.pos[0]+"0"+ myPlayer.pos[1]+"0"+ myPlayer.pos[2]);
         //conexionTopic.SendMessage("accion-"+myPlayer.enemy+"*"+6);
-        Vida.setText("Vida: " + myPlayer.health);
+        life.setText("Vida: " + myPlayer.health);
 
         creatures[myPlayer.enemyId].isFighting = false;
         myPlayer.isFighting = false;
@@ -1561,8 +1561,8 @@ public class GameGUI extends JFrame{
         mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
         DibujarDemasJugadores();
         myPlayer.drawPlayer(jContentPane.getGraphics());
-        Exp.setText("Exp: "+ myPlayer.experience);
-        Nivel.setText("Nivel: "+ myPlayer.level);
+        experience.setText("Exp: "+ myPlayer.experience);
+        level.setText("Nivel: "+ myPlayer.level);
         creatures[myPlayer.enemyId].health = 50;
         creatures[myPlayer.enemyId].isFighting = false;
         myPlayer.isFighting = false;
@@ -1662,7 +1662,7 @@ public class GameGUI extends JFrame{
                             case 1://Tomas pocion y aumenta tu vida
                                 if(myPlayer.getPotions() > 0){
                                     myPlayer.health+=10;
-                                    Vida.setText("Vida: " + myPlayer.health);
+                                    life.setText("Vida: " + myPlayer.health);
                                     //myPlayer.objetos[1]--;
                                     myPlayer.setPotions(myPlayer.getPotions()-1);
                                 }
@@ -1721,7 +1721,7 @@ public class GameGUI extends JFrame{
                         if (creatures[myPlayer.enemyId].health > 0){
                             console.setText("Te han atacado");
                             myPlayer.health-=(creatures[myPlayer.enemyId].level+5);
-                            Vida.setText("Salud: " + myPlayer.health);
+                            life.setText("Salud: " + myPlayer.health);
 
                         }
                         //sino le queda vida ganas
@@ -1789,7 +1789,7 @@ public class GameGUI extends JFrame{
                                     case 1://si es uno bebes pocion siempre que tengas
                                         if(myPlayer.getPotions() > 0){
                                             myPlayer.health+=10;
-                                            Vida.setText("Vida: " + myPlayer.health);
+                                            life.setText("Vida: " + myPlayer.health);
                                             //myPlayer.objetos[1]--;
                                             myPlayer.setPotions(myPlayer.getPotions()-1);
                                         }

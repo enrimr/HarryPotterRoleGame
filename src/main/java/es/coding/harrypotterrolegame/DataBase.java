@@ -23,7 +23,7 @@ public class DataBase extends Thread { // class BaseDatos extends Runnable,
                             indice = textoRecibido.indexOf("-");
                             //si el mensaje es para mi
                             String nombre = textoRecibido.substring(indice+1, textoRecibido.indexOf("*"));
-                            if (nombre.getText().equals(nombre)){
+                            if (GameGUI.getInstance().nameInput.getText().equals(nombre)){
                                 //obtengo los datos pasados en el mensaje
                                 //funcion substring corta ristras segun las posiciones que nos interesan
                                 String Mapa= textoRecibido.substring(textoRecibido.indexOf("*")+1,textoRecibido.indexOf("*")+3);
@@ -104,10 +104,10 @@ public class DataBase extends Thread { // class BaseDatos extends Runnable,
                                         expnum));
 
                                 //mostramos en la pantalla algunos datos relevantes
-                                Vida.setText("Vida: "+ vidanum);
-                                Nivel.setText("Nivel: "+ nivelnum);
-                                Exp.setText("Exp: "+ expnum);
-                                jButton.setVisible(true);
+                                GameGUI.getInstance().life.setText("Vida: "+ vidanum);
+                                GameGUI.getInstance().level.setText("Nivel: "+ nivelnum);
+                                GameGUI.getInstance().experience.setText("Exp: "+ expnum);
+                                GameGUI.getInstance().jButton.setVisible(true);
                             }
 
                         }
@@ -116,7 +116,7 @@ public class DataBase extends Thread { // class BaseDatos extends Runnable,
                             indice = textoRecibido.indexOf("Error");
                             if(indice!=-1)
                             {
-                                Consola.setText("No estas registrado");
+                                GameGUI.getInstance().console.setText("No estas registrado");
                             }
                         }
 

@@ -36,8 +36,8 @@ class Combat extends Thread {
         World.getInstance().getMaps()[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
         DibujarDemasJugadores();
         myPlayer.drawPlayer(myPlayer.getSprite());
-        Exp.setText("Exp: "+myPlayer.experience);
-        Nivel.setText("Nivel: "+Game.getInstance().getMyPlayer().level);
+        GameGUI.getInstance().experience.setText("Exp: "+myPlayer.experience);
+        GameGUI.getInstance().level.setText("Nivel: "+Game.getInstance().getMyPlayer().level);
 
     }
     //procedimiento que se ejecuta al perder un combate
@@ -74,7 +74,7 @@ class Combat extends Thread {
         conexionTopic.SendMessage("pos-"+myPlayer.getName()+"*"+"0"+myPlayer.pos[0]+"0"+myPlayer.pos[1]+"0"+myPlayer.pos[2]);
         //mando a mi enemy que he perdido el combate
         conexionTopic.SendMessage("accion-"+myPlayer.enemy+"*"+6);
-        Vida.setText("Vida: "+myPlayer.health);
+        GameGUI.getInstance().life.setText("Vida: "+myPlayer.health);
 
 
     }
@@ -105,14 +105,14 @@ class Combat extends Thread {
         World.getInstance().getMaps()[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
         DibujarDemasJugadores();
         myPlayer.drawPlayer(jContentPane.getGraphics());
-        Exp.setText("Exp: "+myPlayer.experience);
-        Nivel.setText("Nivel: "+myPlayer.level);
+        GameGUI.getInstance().experience.setText("Exp: "+myPlayer.experience);
+        GameGUI.getInstance().level.setText("Nivel: "+myPlayer.level);
 
     }
     //cuerpo de tratamiento de los mensajes del combate
     public void run() {
         try {
-            MessageConsumer receiver = session.createConsumer(destination);
+            MessageConsumer receiver = Configuration.getInstance().session.createConsumer(Configuration.getInstance().destination);
             receiver.setMessageListener(new MessageListener() {
                 public void onMessage(Message message) {
                     try{
@@ -161,16 +161,16 @@ class Combat extends Thread {
                                     //segun la eleccion me comporto de distintas formas
                                     switch(elecnum){
                                         case 0://si es cero es que me ha atacado y disminuyo mi vida
-                                            Consola.setText("Te han atacado");
+                                            GameGUI.getInstance().console.setText("Te han atacado");
                                             myPlayer.health-=(Game.getInstance().gamePlayers[myPlayer.enemyId].level+5);
-                                            Vida.setText("Salud: "+myPlayer.health);
+                                            GameGUI.getInstance().life.setText("Salud: "+myPlayer.health);
                                             break;
                                         case 3://si te lanza una maldicion imperdonable me mata al isntante
-                                            Consola.setText("Has sufrido una maldición imperdonable!");
+                                            GameGUI.getInstance().console.setText("Has sufrido una maldición imperdonable!");
                                             myPlayer.health=0;
                                             break;
                                         case 4://si es 4 es que quiere hiur
-                                            Consola.setText("Intenta huir del combate!");
+                                            GameGUI.getInstance().console.setText("Intenta huir del combate!");
                                             quierehuir=true;
                                             break;
                                         case 6://si es 6 esta informandome que he ganado el combate
