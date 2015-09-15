@@ -34,8 +34,8 @@ class Combat extends Thread {
 
         //repintamos el mapa para poder seguir jugando por donde habiamo salido
         World.getInstance().getMaps()[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
-        DibujarDemasJugadores();
-        myPlayer.drawPlayer(myPlayer.getSprite());
+        GameGUI.getInstance().drawOtherPlayers();
+        myPlayer.drawPlayer(jContentPane.getGraphics());
         GameGUI.getInstance().experience.setText("Exp: "+myPlayer.experience);
         GameGUI.getInstance().level.setText("Nivel: "+Game.getInstance().getMyPlayer().level);
 
@@ -68,7 +68,7 @@ class Combat extends Thread {
         accioncombate.setVisible(false);
         //repintamos el mapa para continuar la aventura
         World.getInstance().getMaps()[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
-        DibujarDemasJugadores();
+        GameGUI.getInstance().drawOtherPlayers();
         myPlayer.drawPlayer(jContentPane.getGraphics());
         //mando la posicion para que los demas la actualizen
         conexionTopic.SendMessage("pos-"+myPlayer.getName()+"*"+"0"+myPlayer.pos[0]+"0"+myPlayer.pos[1]+"0"+myPlayer.pos[2]);
@@ -103,7 +103,7 @@ class Combat extends Thread {
 
         //volvemos a pintar el mapa
         World.getInstance().getMaps()[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
-        DibujarDemasJugadores();
+        GameGUI.getInstance().drawOtherPlayers();
         myPlayer.drawPlayer(jContentPane.getGraphics());
         GameGUI.getInstance().experience.setText("Exp: "+myPlayer.experience);
         GameGUI.getInstance().level.setText("Nivel: "+myPlayer.level);
@@ -138,7 +138,7 @@ class Combat extends Thread {
                                     datos[1]=Nivel;
                                     datos[2]=Vida;
                                     conexionTopic.SendMessage("combate-"+Nombre2+"*"+myPlayer.getName()+"$"+myPlayer.getFaction()+myPlayer.level+"%"+myPlayer.health);
-                                    combate(Nombre2);
+                                    GameGUI.getInstance().combate(Nombre2);
                                 }
                                 //else combate(Nombre1);
                             }

@@ -50,7 +50,7 @@ public class GameGUI extends JFrame{
         if(!myPlayer.isFighting){ //si el jugador no se encuentra en batalla
             //volvemos a pintar el mapa y al resto de game.gamePlayers
             mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
-            DibujarDemasJugadores();
+            drawOtherPlayers();
             myPlayer.drawPlayer(jContentPane.getGraphics());
         }
         else{
@@ -482,7 +482,7 @@ public class GameGUI extends JFrame{
     }
 
     //procedimiento que dibuja a los demas personajes, criaturas y profesores
-    void DibujarDemasJugadores() {
+    void drawOtherPlayers() {
         for(int i=0; i < game.gamePlayersLength; i++)
         {
             if(gamePlayers[i].pos[0]== myPlayer.pos[0])
@@ -1045,7 +1045,7 @@ public class GameGUI extends JFrame{
                         if(myPlayer.pos[2]>9)charY="";
                         //mandamos nuestra nueva posicion
                         conexionTopic.sendMessage("pos-"+ myPlayer.getName()+"*"+charMapa+ myPlayer.pos[0]+charX+ myPlayer.pos[1]+charY+ myPlayer.pos[2]);
-                        DibujarDemasJugadores();
+                        drawOtherPlayers();
                         //Comprobamos si hay encuentro
                         encuentro();
                     }
@@ -1080,7 +1080,7 @@ public class GameGUI extends JFrame{
                         if(myPlayer.pos[2]>9)charY="";
                         //envio las nuevas posiciones
                         conexionTopic.sendMessage("pos-"+ myPlayer.getName()+"*"+charMapa+ myPlayer.pos[0]+charX+ myPlayer.pos[1]+charY+ myPlayer.pos[2]);
-                        DibujarDemasJugadores();
+                        drawOtherPlayers();
                         //comprobamos que no haya encuentro
                         encuentro();
                     }
@@ -1149,7 +1149,7 @@ public class GameGUI extends JFrame{
                         if(myPlayer.pos[1]>9)charX="";
                         if(myPlayer.pos[2]>9)charY="";
                         conexionTopic.sendMessage("pos-"+ myPlayer.getName()+"*"+charMapa+ myPlayer.pos[0]+charX+ myPlayer.pos[1]+charY+ myPlayer.pos[2]);
-                        DibujarDemasJugadores();
+                        drawOtherPlayers();
                         encuentro();
                     }
                 }
@@ -1182,7 +1182,7 @@ public class GameGUI extends JFrame{
                         if(myPlayer.pos[1]>9)charX="";
                         if(myPlayer.pos[2]>9)charY="";
                         conexionTopic.sendMessage("pos-"+ myPlayer.getName()+"*"+charMapa+ myPlayer.pos[0]+charX+ myPlayer.pos[1]+charY+ myPlayer.pos[2]);
-                        DibujarDemasJugadores();
+                        drawOtherPlayers();
                         encuentro();
                     }
                 }
@@ -1523,7 +1523,7 @@ public class GameGUI extends JFrame{
         accioncombate.setVisible(false);
 
         mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
-        DibujarDemasJugadores();
+        drawOtherPlayers();
         myPlayer.drawPlayer(jContentPane.getGraphics());
         conexionTopic.sendMessage("pos-"+ myPlayer.getName()+"*"+"0"+ myPlayer.pos[0]+"0"+ myPlayer.pos[1]+"0"+ myPlayer.pos[2]);
         //conexionTopic.SendMessage("accion-"+myPlayer.enemy+"*"+6);
@@ -1559,7 +1559,7 @@ public class GameGUI extends JFrame{
         accioncombate.setVisible(false);
 
         mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
-        DibujarDemasJugadores();
+        drawOtherPlayers();
         myPlayer.drawPlayer(jContentPane.getGraphics());
         experience.setText("Exp: "+ myPlayer.experience);
         level.setText("Nivel: "+ myPlayer.level);
@@ -1616,7 +1616,7 @@ public class GameGUI extends JFrame{
         myPlayer.isFightingVersusProfessor = false;
 
         mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
-        DibujarDemasJugadores();
+        drawOtherPlayers();
         myPlayer.drawPlayer(jContentPane.getGraphics());
 
     }
@@ -1634,7 +1634,7 @@ public class GameGUI extends JFrame{
         pregunta.setVisible(false);
 
         mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
-        DibujarDemasJugadores();
+        drawOtherPlayers();
         myPlayer.drawPlayer(jContentPane.getGraphics());
 
         teachers[myPlayer.enemyId].isFighting = false;
@@ -1712,7 +1712,7 @@ public class GameGUI extends JFrame{
                                 accioncombate.setVisible(false);
 
                                 mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
-                                DibujarDemasJugadores();
+                                drawOtherPlayers();
                                 myPlayer.drawPlayer(jContentPane.getGraphics());
                                 break;
                         }
@@ -1836,7 +1836,7 @@ public class GameGUI extends JFrame{
                                         accioncombate.setVisible(false);
 
                                         mundito[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
-                                        DibujarDemasJugadores();
+                                        drawOtherPlayers();
                                         myPlayer.drawPlayer(jContentPane.getGraphics());
                                         myPlayer.isFighting =false;
 
