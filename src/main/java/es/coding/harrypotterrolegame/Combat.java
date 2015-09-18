@@ -18,6 +18,7 @@ class Combat extends Thread {
             myPlayer.experience=0;
         }
         //borramos los controles de la batalla
+        // TODO sacar todo esto fuera del GUI
         guion1.setVisible(false);
         guion2.setVisible(false);
         guion3.setVisible(false);
