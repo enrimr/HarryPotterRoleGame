@@ -641,7 +641,7 @@ public class GameGUI extends JFrame{
 
     private static final long serialVersionUID = 1L;
 
-    private JPanel jContentPane = null;
+    JPanel jContentPane = null;
 
     JButton jButton = null;
 
@@ -1260,22 +1260,22 @@ public class GameGUI extends JFrame{
     private JComboBox casareg = null;
     private JComboBox imagenreg = null;
     private JButton Crear = null;
-    private JLabel guion1 = null;
-    private JLabel guion2 = null;
-    private JLabel guion3 = null;
-    private JLabel Atacar = null;
-    private JLabel Pocion = null;
-    private JLabel Veneno = null;
-    private JLabel Maldición_Imperdonable = null;
-    private JLabel guion4 = null;
-    private JLabel huir = null;
-    private JLabel guion5 = null;
+    JLabel guion1 = null;
+    JLabel guion2 = null;
+    JLabel guion3 = null;
+    JLabel Atacar = null;
+    JLabel Pocion = null;
+    JLabel Veneno = null;
+    JLabel Maldición_Imperdonable = null;
+    JLabel guion4 = null;
+    JLabel huir = null;
+    JLabel guion5 = null;
     JLabel life = null;
-    private JButton accioncombate = null;
+    JButton accioncombate = null;
     JLabel level = null;
     JLabel experience = null;
-    private JLabel vida_rival = null;
-    private JLabel exp_rival = null;
+    JLabel vida_rival = null;
+    JLabel exp_rival = null;
     private JButton getJButton32() {
         if (jButton32 == null) {
             jButton32 = new JButton();

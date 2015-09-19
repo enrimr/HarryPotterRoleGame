@@ -19,24 +19,24 @@ class Combat extends Thread {
         }
         //borramos los controles de la batalla
         // TODO sacar todo esto fuera del GUI
-        guion1.setVisible(false);
-        guion2.setVisible(false);
-        guion3.setVisible(false);
-        guion4.setVisible(false);
-        guion5.setVisible(false);
-        Atacar.setVisible(false);
-        Pocion.setVisible(false);
-        Veneno.setVisible(false);
-        huir.setVisible(false);
-        Maldición_Imperdonable.setVisible(false);
-        exp_rival.setVisible(false);
-        vida_rival.setVisible(false);
-        accioncombate.setVisible(false);
+        GameGUI.getInstance().guion1.setVisible(false);
+        GameGUI.getInstance().guion2.setVisible(false);
+        GameGUI.getInstance().guion3.setVisible(false);
+        GameGUI.getInstance().guion4.setVisible(false);
+        GameGUI.getInstance().guion5.setVisible(false);
+        GameGUI.getInstance().Atacar.setVisible(false);
+        GameGUI.getInstance().Pocion.setVisible(false);
+        GameGUI.getInstance().Veneno.setVisible(false);
+        GameGUI.getInstance().huir.setVisible(false);
+        GameGUI.getInstance().Maldición_Imperdonable.setVisible(false);
+        GameGUI.getInstance().exp_rival.setVisible(false);
+        GameGUI.getInstance().vida_rival.setVisible(false);
+        GameGUI.getInstance().accioncombate.setVisible(false);
 
         //repintamos el mapa para poder seguir jugando por donde habiamo salido
-        World.getInstance().getMaps()[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
+        World.getInstance().getMaps()[myPlayer.pos[0]].drawMap(GameGUI.getInstance().jContentPane.getGraphics(), 180, 20);
         GameGUI.getInstance().drawOtherPlayers();
-        myPlayer.drawPlayer(jContentPane.getGraphics());
+        myPlayer.drawPlayer(GameGUI.getInstance().jContentPane.getGraphics());
         GameGUI.getInstance().experience.setText("Exp: "+myPlayer.experience);
         GameGUI.getInstance().level.setText("Nivel: "+Game.getInstance().getMyPlayer().level);
 
@@ -54,23 +54,23 @@ class Combat extends Thread {
         myPlayer.pos[2]=7;
         myPlayer.health=100;
         //borramos los campos de la batalla
-        guion1.setVisible(false);
-        guion2.setVisible(false);
-        guion3.setVisible(false);
-        guion4.setVisible(false);
-        guion5.setVisible(false);
-        Atacar.setVisible(false);
-        Pocion.setVisible(false);
-        Veneno.setVisible(false);
-        huir.setVisible(false);
-        Maldición_Imperdonable.setVisible(false);
-        exp_rival.setVisible(false);
-        vida_rival.setVisible(false);
-        accioncombate.setVisible(false);
+        GameGUI.getInstance().guion1.setVisible(false);
+        GameGUI.getInstance().guion2.setVisible(false);
+        GameGUI.getInstance().guion3.setVisible(false);
+        GameGUI.getInstance().guion4.setVisible(false);
+        GameGUI.getInstance().guion5.setVisible(false);
+        GameGUI.getInstance().Atacar.setVisible(false);
+        GameGUI.getInstance().Pocion.setVisible(false);
+        GameGUI.getInstance().Veneno.setVisible(false);
+        GameGUI.getInstance().huir.setVisible(false);
+        GameGUI.getInstance().Maldición_Imperdonable.setVisible(false);
+        GameGUI.getInstance().exp_rival.setVisible(false);
+        GameGUI.getInstance().vida_rival.setVisible(false);
+        GameGUI.getInstance().accioncombate.setVisible(false);
         //repintamos el mapa para continuar la aventura
-        World.getInstance().getMaps()[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
+        World.getInstance().getMaps()[myPlayer.pos[0]].drawMap(GameGUI.getInstance().jContentPane.getGraphics(), 180, 20);
         GameGUI.getInstance().drawOtherPlayers();
-        myPlayer.drawPlayer(jContentPane.getGraphics());
+        myPlayer.drawPlayer(GameGUI.getInstance().jContentPane.getGraphics());
         //mando la posicion para que los demas la actualizen
         conexionTopic.SendMessage("pos-"+myPlayer.getName()+"*"+"0"+myPlayer.pos[0]+"0"+myPlayer.pos[1]+"0"+myPlayer.pos[2]);
         //mando a mi enemy que he perdido el combate
@@ -88,24 +88,24 @@ class Combat extends Thread {
             myPlayer.experience=0;
         }
         //borramos los componentes de la batalla
-        guion1.setVisible(false);
-        guion2.setVisible(false);
-        guion3.setVisible(false);
-        guion4.setVisible(false);
-        guion5.setVisible(false);
-        Atacar.setVisible(false);
-        Pocion.setVisible(false);
-        Veneno.setVisible(false);
-        huir.setVisible(false);
-        Maldición_Imperdonable.setVisible(false);
-        exp_rival.setVisible(false);
-        vida_rival.setVisible(false);
-        accioncombate.setVisible(false);
+        GameGUI.getInstance().guion1.setVisible(false);
+        GameGUI.getInstance().guion2.setVisible(false);
+        GameGUI.getInstance().guion3.setVisible(false);
+        GameGUI.getInstance().guion4.setVisible(false);
+        GameGUI.getInstance().guion5.setVisible(false);
+        GameGUI.getInstance().Atacar.setVisible(false);
+        GameGUI.getInstance().Pocion.setVisible(false);
+        GameGUI.getInstance().Veneno.setVisible(false);
+        GameGUI.getInstance().huir.setVisible(false);
+        GameGUI.getInstance().Maldición_Imperdonable.setVisible(false);
+        GameGUI.getInstance().exp_rival.setVisible(false);
+        GameGUI.getInstance().vida_rival.setVisible(false);
+        GameGUI.getInstance().accioncombate.setVisible(false);
 
         //volvemos a pintar el mapa
-        World.getInstance().getMaps()[myPlayer.pos[0]].drawMap(jContentPane.getGraphics(), 180, 20);
+        World.getInstance().getMaps()[myPlayer.pos[0]].drawMap(GameGUI.getInstance().jContentPane.getGraphics(), 180, 20);
         GameGUI.getInstance().drawOtherPlayers();
-        myPlayer.drawPlayer(jContentPane.getGraphics());
+        myPlayer.drawPlayer(GameGUI.getInstance().jContentPane.getGraphics());
         GameGUI.getInstance().experience.setText("Exp: "+myPlayer.experience);
         GameGUI.getInstance().level.setText("Nivel: "+myPlayer.level);
 
