@@ -1,4 +1,7 @@
 apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = "es.coding.harrypotterrolegame.Application"
 
 sourceCompatibility = 1.5
 version = '1.0'
