@@ -666,6 +666,7 @@ public class GameGUI extends JFrame{
      */
     public GameGUI() {
         super();
+        System.out.print(" > GameGUI()\n");
         initialize();
     }
 
@@ -675,6 +676,7 @@ public class GameGUI extends JFrame{
      * @return void
      */
     private void initialize() {
+        System.out.print(" > GameGUI() > initialize()\n");
         this.setSize(655, 643);
         this.setContentPane(getJContentPane());
         this.setTitle("Harry Potter - El juego de Rol");

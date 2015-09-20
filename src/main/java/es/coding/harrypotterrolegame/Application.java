@@ -10,7 +10,10 @@ public class Application {
 
         javax.swing.SwingUtilities.invokeLater(
                 new Runnable() {
-                    public void run() { new GameGUI(); }
+                    public void run() {
+                        System.out.print("HarryPotterRoleGame begin :D\n");
+                        GameGUI.getInstance();
+                    }
                 }
         );
 
