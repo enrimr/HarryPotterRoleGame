@@ -12,7 +12,7 @@ public class Application {
                 new Runnable() {
                     public void run() {
                         System.out.print("HarryPotterRoleGame begin :D\n");
-                        GameGUI.getInstance();
+                        GameGUI.getInstance().setVisible(true);
                     }
                 }
         );
