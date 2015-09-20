@@ -690,17 +690,7 @@ public class GameGUI extends JFrame{
                 }
             }
         });
-        this.addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosed(java.awt.event.WindowEvent e) {
-
-
-            }
-        });
-        this.addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosed(java.awt.event.WindowEvent e) {
-                System.out.println("windowClosed()"); // TODO Auto-generated Event stub windowClosed()
-            }
-        });
+        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
     /**
