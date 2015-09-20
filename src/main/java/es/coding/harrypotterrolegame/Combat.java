@@ -7,6 +7,7 @@ import javax.jms.*;
  */
 public     //Hilo que controla los combates
 class Combat extends Thread {
+    String [] datos = new String[3]; //variable usada para pasar datos a la hora combatir
     Player myPlayer = Game.getInstance().getMyPlayer();
     boolean quierehuir=false; //variable que indicara si un personaje ha huido
     //procedimiento que se ejecuta al ganar un combate
@@ -72,9 +73,9 @@ class Combat extends Thread {
         GameGUI.getInstance().drawOtherPlayers();
         myPlayer.drawPlayer(GameGUI.getInstance().jContentPane.getGraphics());
         //mando la posicion para que los demas la actualizen
-        conexionTopic.SendMessage("pos-"+myPlayer.getName()+"*"+"0"+myPlayer.pos[0]+"0"+myPlayer.pos[1]+"0"+myPlayer.pos[2]);
+        GameGUI.getInstance().conexionTopic.sendMessage("pos-"+myPlayer.getName()+"*"+"0"+myPlayer.pos[0]+"0"+myPlayer.pos[1]+"0"+myPlayer.pos[2]);
         //mando a mi enemy que he perdido el combate
-        conexionTopic.SendMessage("accion-"+myPlayer.enemy+"*"+6);
+        GameGUI.getInstance().conexionTopic.sendMessage("accion-"+myPlayer.enemy+"*"+6);
         GameGUI.getInstance().life.setText("Vida: "+myPlayer.health);
 
 
@@ -138,7 +139,7 @@ class Combat extends Thread {
                                     datos[0]=Bando;
                                     datos[1]=Nivel;
                                     datos[2]=Vida;
-                                    conexionTopic.SendMessage("combate-"+Nombre2+"*"+myPlayer.getName()+"$"+myPlayer.getFaction()+myPlayer.level+"%"+myPlayer.health);
+                                    GameGUI.getInstance().conexionTopic.sendMessage("combate-"+Nombre2+"*"+myPlayer.getName()+"$"+myPlayer.getFaction()+myPlayer.level+"%"+myPlayer.health);
                                     GameGUI.getInstance().combate(Nombre2);
                                 }
                                 //else combate(Nombre1);
