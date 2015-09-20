@@ -4,6 +4,7 @@ import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.Session;
 import javax.naming.Context;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,28 +26,28 @@ public class Configuration {
 
      //matriz de imagenes de todos los personajes que hay en el juego
      String [] playerSprites= {
-            "./images/player/gryffindor_tio.gif",
-            "./images/player/gryffindor_tia.gif",
-            "./images/player/slytherin_tio.gif",
-            "./images/player/slytherin_tia.gif",
-            "./images/player/hufflepuff_tio.gif",
-            "./images/player/hufflepuff_tia.gif",
-            "./images/player/ravenclaw_tio.gif",
-            "./images/player/ravenclaw_tia.gif",
-            "./images/player/harrypotter.gif",
-            "./images/player/snape.gif",
-            "./images/player/nagini.gif",//criatura
-            "./images/player/mcgonagall.gif", //Mc
-            "./images/player/Sprout.gif",
-            "./images/player/flit.gif",
-            "./images/player/lucius.gif",
-            "./images/player/bellatrix.gif",
-            "./images/player/colagusano.gif",
-            "./images/player/umbrig.gif",
-            "./images/player/dumbler.gif",
-            "./images/player/volde.gif",
-            "./images/player/lloron.gif",
-            "./images/player/trol.gif"};
+            "./src/main/resources/images/player/gryffindor_tio.gif",
+            "./src/main/resources/images/player/gryffindor_tia.gif",
+            "./src/main/resources/images/player/slytherin_tio.gif",
+            "./src/main/resources/images/player/slytherin_tia.gif",
+            "./src/main/resources/images/player/hufflepuff_tio.gif",
+            "./src/main/resources/images/player/hufflepuff_tia.gif",
+            "./src/main/resources/images/player/ravenclaw_tio.gif",
+            "./src/main/resources/images/player/ravenclaw_tia.gif",
+            "./src/main/resources/images/player/harrypotter.gif",
+            "./src/main/resources/images/player/snape.gif",
+            "./src/main/resources/images/player/nagini.gif",//criatura
+            "./src/main/resources/images/player/mcgonagall.gif", //Mc
+            "./src/main/resources/images/player/Sprout.gif",
+            "./src/main/resources/images/player/flit.gif",
+            "./src/main/resources/images/player/lucius.gif",
+            "./src/main/resources/images/player/bellatrix.gif",
+            "./src/main/resources/images/player/colagusano.gif",
+            "./src/main/resources/images/player/umbrig.gif",
+            "./src/main/resources/images/player/dumbler.gif",
+            "./src/main/resources/images/player/volde.gif",
+            "./src/main/resources/images/player/lloron.gif",
+            "./src/main/resources/images/player/trol.gif"};
 
     Properties config = new Properties();
 
@@ -61,7 +62,8 @@ public class Configuration {
         this.config = new Properties();
         InputStream input = null;
         try {
-            input = new FileInputStream("config.properties");
+            //System.out.println("File path: " + new File("Your file name").getAbsolutePath());
+            input = new FileInputStream("./src/main/config/config.properties");
             // load a properties file
             this.config.load(input);
 

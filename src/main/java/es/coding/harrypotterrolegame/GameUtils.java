@@ -66,7 +66,7 @@ public class GameUtils {
 
         //Declaracion e inicializacion de los distintos escenarios
 
-        int sizeWidth = Integer.parseInt(Configuration.getInstance().getConfig("map.sizel.width"));
+        int sizeWidth = Integer.parseInt(Configuration.getInstance().getConfig("map.size.width"));
         int sizeHeight = Integer.parseInt(Configuration.getInstance().getConfig("map.size.height"));
         int cellWidth = Integer.parseInt(Configuration.getInstance().getConfig("map.cell.width"));
         int cellHeight = Integer.parseInt(Configuration.getInstance().getConfig("map.cell.height"));
