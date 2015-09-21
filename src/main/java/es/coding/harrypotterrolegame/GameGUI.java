@@ -15,7 +15,6 @@ import java.util.Random;
  */
 public class GameGUI extends JFrame{
 
-    // Refactored
     ConnectionManager conexionTopic;  //variable que se encarga del paso de mensajes
     Configuration config = Configuration.getInstance();
     Game game = Game.getInstance();
